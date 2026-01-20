@@ -138,8 +138,23 @@ const App: React.FC = () => {
     onToggleTheme: toggleTheme,
   });
 
-  const recentExecutions = executions?.slice(0, 10) || [];
-  const errorExecutions = executions?.filter(e => e.status === 'error').slice(0, 5) || [];
+  // Create workflow name map for enriching executions
+  const workflowNameMap = React.useMemo(() => {
+    const map = new Map<string, string>();
+    workflows?.forEach(w => map.set(w.id, w.name));
+    return map;
+  }, [workflows]);
+
+  // Enrich executions with workflow names
+  const enrichedExecutions = React.useMemo(() => {
+    return executions?.map(exec => ({
+      ...exec,
+      workflowName: exec.workflowName || workflowNameMap.get(exec.workflowId) || `Workflow ${exec.workflowId}`,
+    })) || [];
+  }, [executions, workflowNameMap]);
+
+  const recentExecutions = enrichedExecutions.slice(0, 10);
+  const errorExecutions = enrichedExecutions.filter(e => e.status === 'error').slice(0, 5);
 
   // Show loading state while checking auth
   if (authLoading) {
@@ -269,7 +284,7 @@ const App: React.FC = () => {
         <div className="mb-8">
           <Section title="Execution History (7 days)">
             <ErrorBoundary>
-              <ExecutionChart executions={executions || []} isLoading={executionsLoading} />
+              <ExecutionChart executions={enrichedExecutions} isLoading={executionsLoading} />
             </ErrorBoundary>
           </Section>
         </div>
