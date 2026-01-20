@@ -12,10 +12,51 @@ import {
   Check,
   Tag,
   X,
+  Webhook,
+  Clock,
+  MousePointer,
+  Mail,
+  Zap,
 } from 'lucide-react';
-import type { Workflow as WorkflowType } from '../types';
+import type { Workflow as WorkflowType, WorkflowNode } from '../types';
 import { getStoredSettings } from '../hooks/useSettings';
 import { exportWorkflowsToCSV, exportWorkflowsToJSON } from '../utils/export';
+
+// Get trigger info from workflow nodes
+const getTriggerInfo = (nodes: WorkflowNode[]): { type: string; icon: React.ReactNode; label: string } => {
+  const triggerNode = nodes.find((n) =>
+    n.type.toLowerCase().includes('trigger') ||
+    n.type === 'n8n-nodes-base.webhook' ||
+    n.type === 'n8n-nodes-base.cron' ||
+    n.type === 'n8n-nodes-base.start'
+  );
+
+  if (!triggerNode) {
+    return { type: 'unknown', icon: <Zap size={12} />, label: 'Unknown' };
+  }
+
+  const type = triggerNode.type.toLowerCase();
+
+  if (type.includes('webhook')) {
+    return { type: 'webhook', icon: <Webhook size={12} />, label: 'Webhook' };
+  }
+  if (type.includes('schedule') || type.includes('cron')) {
+    return { type: 'schedule', icon: <Clock size={12} />, label: 'Schedule' };
+  }
+  if (type.includes('manual') || type === 'n8n-nodes-base.start') {
+    return { type: 'manual', icon: <MousePointer size={12} />, label: 'Manual' };
+  }
+  if (type.includes('email') || type.includes('imap') || type.includes('gmail')) {
+    return { type: 'email', icon: <Mail size={12} />, label: 'Email' };
+  }
+
+  // Extract app name from type (e.g., "n8n-nodes-base.slackTrigger" -> "Slack")
+  const parts = triggerNode.type.split('.');
+  const nodeName = parts[parts.length - 1];
+  const appName = nodeName.replace(/Trigger$/i, '').replace(/([A-Z])/g, ' $1').trim();
+
+  return { type: 'app', icon: <Zap size={12} />, label: appName || 'Trigger' };
+};
 
 interface WorkflowListProps {
   workflows: WorkflowType[];
@@ -373,14 +414,22 @@ export const WorkflowList: React.FC<WorkflowListProps> = ({
                   <h3 className="text-sm font-medium text-neutral-900 dark:text-white truncate">
                     {workflow.name}
                   </h3>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                    {workflow.nodes.length} nodes
+                  <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+                    <span>{workflow.nodes.length} nodes</span>
+                    <span className="text-neutral-300 dark:text-neutral-600">•</span>
+                    <span className="inline-flex items-center gap-1">
+                      {getTriggerInfo(workflow.nodes).icon}
+                      {getTriggerInfo(workflow.nodes).label}
+                    </span>
                     {workflow.tags && workflow.tags.length > 0 && (
-                      <span className="ml-2 text-neutral-400 dark:text-neutral-500">
-                        {workflow.tags.map((t) => t.name).join(', ')}
-                      </span>
+                      <>
+                        <span className="text-neutral-300 dark:text-neutral-600">•</span>
+                        <span className="text-neutral-400 dark:text-neutral-500 truncate">
+                          {workflow.tags.map((t) => t.name).join(', ')}
+                        </span>
+                      </>
                     )}
-                  </p>
+                  </div>
                 </div>
 
                 {/* Actions */}
