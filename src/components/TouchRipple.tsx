@@ -13,7 +13,6 @@ interface TouchRippleProps {
   disabled?: boolean;
   color?: 'light' | 'dark' | 'primary';
   onClick?: (e: React.MouseEvent | React.TouchEvent) => void;
-  as?: keyof JSX.IntrinsicElements;
 }
 
 export const TouchRipple: React.FC<TouchRippleProps> = ({
@@ -22,7 +21,6 @@ export const TouchRipple: React.FC<TouchRippleProps> = ({
   disabled = false,
   color = 'light',
   onClick,
-  as: Component = 'div',
 }) => {
   const [ripples, setRipples] = useState<Ripple[]>([]);
   const [isPressed, setIsPressed] = useState(false);
@@ -84,7 +82,7 @@ export const TouchRipple: React.FC<TouchRippleProps> = ({
   );
 
   return (
-    <Component
+    <div
       className={`relative overflow-hidden select-none transition-transform duration-150 ${
         isPressed && !disabled ? 'scale-[0.98]' : ''
       } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${className}`}
@@ -108,7 +106,7 @@ export const TouchRipple: React.FC<TouchRippleProps> = ({
           }}
         />
       ))}
-    </Component>
+    </div>
   );
 };
 
