@@ -148,13 +148,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
-  // Extract the path from the URL (after /api/n8n/)
-  const url = req.url || '';
-  const pathMatch = url.match(/^\/api\/n8n\/(.*)$/);
-  const pathWithQuery = pathMatch ? pathMatch[1] : '';
+  // Extract the path from Vercel rewrite query parameter
+  // Vercel rewrites /api/n8n/:path* to /api/n8n/proxy?path=:path*
+  const pathParam = req.query.path;
+  const pathSegments = Array.isArray(pathParam) ? pathParam : pathParam ? [pathParam] : [];
+  const pathString = pathSegments.join('/');
+
+  // Get any additional query params (excluding 'path' which is from rewrite)
+  const url = new URL(req.url || '', `https://${req.headers.host}`);
+  url.searchParams.delete('path');
+  const queryString = url.searchParams.toString();
 
   // Build the target URL
-  const targetUrl = `${credentials.url}/${pathWithQuery}`;
+  const targetUrl = `${credentials.url}/${pathString}${queryString ? `?${queryString}` : ''}`;
 
   try {
     const response = await fetch(targetUrl, {
