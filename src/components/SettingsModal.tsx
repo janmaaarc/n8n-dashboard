@@ -131,6 +131,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     type={showApiKey ? 'text' : 'password'}
                     value={formData.apiKey}
                     onChange={(e) => handleChange('apiKey', e.target.value)}
+                    onCopy={(e) => e.preventDefault()}
+                    onCut={(e) => e.preventDefault()}
                     placeholder="Your n8n API key"
                     className="w-full px-3 py-2 pr-16 text-sm rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono"
                   />
