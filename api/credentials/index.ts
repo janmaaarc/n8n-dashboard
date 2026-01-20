@@ -1,9 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
-import { encrypt, decrypt } from '../lib/encryption';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const encryptionKey = process.env.ENCRYPTION_KEY;
 
 const getSupabaseClient = () => {
   if (!supabaseUrl || !supabaseServiceKey) {
@@ -12,6 +12,14 @@ const getSupabaseClient = () => {
   return createClient(supabaseUrl, supabaseServiceKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
+};
+
+const checkConfig = (): { configured: boolean; missing: string[] } => {
+  const missing: string[] = [];
+  if (!supabaseUrl) missing.push('SUPABASE_URL');
+  if (!supabaseServiceKey) missing.push('SUPABASE_SERVICE_ROLE_KEY');
+  if (!encryptionKey) missing.push('ENCRYPTION_KEY');
+  return { configured: missing.length === 0, missing };
 };
 
 const verifyToken = async (token: string) => {
@@ -30,6 +38,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  // Check configuration first
+  const config = checkConfig();
+  if (!config.configured) {
+    return res.status(500).json({
+      error: 'Server configuration incomplete',
+      missing: config.missing,
+    });
   }
 
   // Verify authentication
@@ -83,6 +100,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
+      // Import encrypt dynamically to avoid module-level errors
+      const { encrypt } = await import('../lib/encryption');
       const encryptedApiKey = encrypt(apiKey);
 
       // Check if credentials exist
