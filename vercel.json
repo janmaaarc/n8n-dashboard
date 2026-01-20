@@ -1,8 +1,17 @@
 {
+  "functions": {
+    "api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
   "rewrites": [
     {
       "source": "/api/n8n/:path*",
-      "destination": "/api/n8n/:path*"
+      "destination": "/api/n8n/proxy"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
     }
   ]
 }

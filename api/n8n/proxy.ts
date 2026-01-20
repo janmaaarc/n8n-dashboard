@@ -1,6 +1,4 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { verifyAccessToken, getUserCredentials } from '../lib/supabase-server';
-import { decrypt } from '../lib/encryption';
 
 interface N8nCredentials {
   url: string;
@@ -16,23 +14,26 @@ async function getCredentials(req: VercelRequest): Promise<N8nCredentials | null
   // Check for Authorization header (multi-user mode)
   const authHeader = req.headers.authorization;
   if (authHeader?.startsWith('Bearer ')) {
-    const accessToken = authHeader.substring(7);
-    const user = await verifyAccessToken(accessToken);
+    try {
+      // Dynamic imports to avoid module-level errors
+      const { verifyAccessToken, getUserCredentials } = await import('../lib/supabase-server');
+      const { decrypt } = await import('../lib/encryption');
 
-    if (user) {
-      const credentials = await getUserCredentials(user.id);
-      if (credentials) {
-        try {
+      const accessToken = authHeader.substring(7);
+      const user = await verifyAccessToken(accessToken);
+
+      if (user) {
+        const credentials = await getUserCredentials(user.id);
+        if (credentials) {
           const apiKey = decrypt(credentials.encrypted_api_key);
           return {
             url: credentials.n8n_url,
             apiKey,
           };
-        } catch (err) {
-          console.error('Failed to decrypt API key:', err);
-          return null;
         }
       }
+    } catch (err) {
+      console.error('Failed to get user credentials:', err);
     }
   }
 
@@ -65,12 +66,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
-  // Get the path from the catch-all route
-  const { path } = req.query;
-  const pathString = Array.isArray(path) ? path.join('/') : path || '';
+  // Extract the path from the URL (after /api/n8n/)
+  const url = req.url || '';
+  const pathMatch = url.match(/^\/api\/n8n\/(.*)$/);
+  const pathWithQuery = pathMatch ? pathMatch[1] : '';
 
   // Build the target URL
-  const targetUrl = `${credentials.url}/${pathString}${req.url?.includes('?') ? req.url.substring(req.url.indexOf('?')) : ''}`;
+  const targetUrl = `${credentials.url}/${pathWithQuery}`;
 
   try {
     const response = await fetch(targetUrl, {
