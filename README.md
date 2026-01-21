@@ -1,27 +1,45 @@
 # n8n Pulse
 
-A modern monitoring dashboard for n8n workflows built with React, TypeScript, and Tailwind CSS. Features a Linear-inspired minimal design with support for both single-user and multi-user deployments.
+A modern monitoring dashboard for n8n workflows built with React, TypeScript, and Tailwind CSS. Features a Linear/Notion-inspired minimal design with sidebar navigation and support for both single-user and multi-user deployments.
 
 ## Features
 
+- **Sidebar Navigation**
+  - Dashboard - Overview stats, charts, and recent activity
+  - Workflows - Full workflow management with search/filter
+  - Executions - Execution history and details
+  - Credentials - View n8n credential metadata
+  - Variables - Environment variables
+  - Settings - Connection and preferences
+  - Collapsible sidebar (240px expanded, 64px collapsed)
+  - Mobile-responsive drawer
+
+- **Dashboard Overview**
+  - Stats cards with weekly trend indicators (vs last week)
+  - 7-day execution history chart
+  - Recent executions feed
+  - Quick workflow access
+
 - **Workflow Management**
-  - View all workflows with status indicators
+  - Sortable table with columns: Workflow, Status, Last Execution, Executions, Success Rate, Trigger, Actions
   - Toggle workflows active/inactive
   - Manual workflow triggering
   - Search workflows by name, ID, or tags
   - Filter by status (active/inactive) and tags
-  - Sort by favorites, name, status, or node count
+  - Sort by any column (ascending/descending)
   - Bulk activate/deactivate actions
   - Favorites system with persistence
   - Export to CSV/JSON
+  - Per-workflow execution stats and success rates
 
 - **Execution Monitoring**
+  - Sortable table with columns: Workflow, Status, Start Time, Duration, Trigger, Actions
   - Real-time execution feed with auto-refresh
-  - 7-day execution history chart
   - Detailed execution panel (success/error/running)
   - Filter executions by status
-  - Export executions to CSV/JSON
+  - Sort by any column (ascending/descending)
   - Error tracking with stack traces
+  - Click to view execution details
 
 - **User Experience**
   - Keyboard shortcuts (R: refresh, /: search, ,: settings, D: dark mode, ?: help)
@@ -42,12 +60,12 @@ A modern monitoring dashboard for n8n workflows built with React, TypeScript, an
 ## Tech Stack
 
 - React 19 + TypeScript
+- React Router (page navigation)
 - Vite
 - Tailwind CSS 4
 - React Query (TanStack Query)
 - Supabase (authentication & database)
 - Recharts (analytics)
-- date-fns (date formatting)
 - Lucide React (icons)
 - Vercel (deployment)
 
@@ -169,35 +187,46 @@ npm run dev
 ```
 src/
 ├── components/
+│   ├── layout/
+│   │   ├── Sidebar.tsx       # Collapsible sidebar navigation
+│   │   ├── MainLayout.tsx    # Main layout wrapper with Outlet
+│   │   └── PageHeader.tsx    # Reusable page header component
 │   ├── LandingPage.tsx       # Landing page for unauthenticated users
 │   ├── AuthModal.tsx         # Sign in/sign up modal
-│   ├── WorkflowList.tsx      # Workflow table with search/filter
-│   ├── ExecutionFeed.tsx     # Recent executions list
+│   ├── WorkflowTable.tsx     # Sortable workflow table with stats
+│   ├── ExecutionTable.tsx    # Sortable execution history table
+│   ├── ExecutionFeed.tsx     # Recent executions list (dashboard)
+│   ├── StatCard.tsx          # Stats card with trend indicators
 │   ├── ExecutionChart.tsx    # 7-day execution history chart
-│   ├── SettingsModal.tsx     # Settings & credentials config
-│   ├── TouchRipple.tsx       # Touch feedback components
+│   ├── SettingsModal.tsx     # Settings modal (quick access)
 │   └── ...
+├── pages/
+│   ├── DashboardPage.tsx     # Dashboard overview
+│   ├── WorkflowsPage.tsx     # Workflows management
+│   ├── ExecutionsPage.tsx    # Execution history
+│   ├── CredentialsPage.tsx   # n8n credentials list
+│   ├── VariablesPage.tsx     # Environment variables
+│   └── SettingsPage.tsx      # Full settings page
 ├── contexts/
-│   └── AuthContext.tsx       # Authentication context
+│   ├── AuthContext.tsx       # Authentication context
+│   └── SidebarContext.tsx    # Sidebar collapse state
 ├── hooks/
 │   ├── useN8n.ts             # API hooks (React Query)
 │   ├── useSettings.ts        # Settings management
 │   ├── useCredentials.ts     # Supabase credentials hook
+│   ├── useMediaQuery.ts      # Responsive breakpoint detection
 │   └── ...
 ├── services/
 │   └── n8n.ts                # n8n API wrapper
 ├── lib/
 │   └── supabase.ts           # Supabase client
-└── App.tsx
+└── App.tsx                   # Route definitions
 
 api/
 ├── credentials/
 │   └── index.ts              # Credentials CRUD endpoint
-├── lib/
-│   ├── encryption.ts         # AES-256-GCM encryption
-│   └── supabase-server.ts    # Server-side Supabase client
 └── n8n/
-    └── [...path].ts          # n8n API proxy
+    └── proxy.ts              # n8n API proxy
 ```
 
 ## Security

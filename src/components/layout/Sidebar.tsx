@@ -5,7 +5,6 @@ import {
   Workflow,
   Activity,
   Key,
-  Tag,
   Variable,
   Settings,
   LogOut,
@@ -30,7 +29,6 @@ const mainNavItems: NavItem[] = [
   { icon: Workflow, label: 'Workflows', path: '/workflows' },
   { icon: Activity, label: 'Executions', path: '/executions' },
   { icon: Key, label: 'Credentials', path: '/credentials' },
-  { icon: Tag, label: 'Tags', path: '/tags' },
   { icon: Variable, label: 'Variables', path: '/variables' },
 ];
 

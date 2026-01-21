@@ -156,6 +156,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onShowSettings }) 
           label="Executions"
           value={stats.totalExecutions}
           icon={Play}
+          trend={stats.trends.executions}
         />
         <StatCard
           label="Success Rate"
@@ -163,12 +164,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onShowSettings }) 
           suffix="%"
           icon={CheckCircle}
           color="success"
+          trend={stats.trends.successRate}
         />
         <StatCard
           label="Errors"
           value={stats.recentErrors}
           icon={AlertCircle}
           color={stats.recentErrors > 0 ? 'error' : 'default'}
+          trend={stats.trends.errors}
         />
       </div>
 

@@ -11,7 +11,6 @@ import {
   WorkflowsPage,
   ExecutionsPage,
   CredentialsPage,
-  TagsPage,
   VariablesPage,
   SettingsPage,
 } from './pages';
@@ -89,7 +88,6 @@ const App: React.FC = () => {
           <Route path="/workflows" element={<WorkflowsPage />} />
           <Route path="/executions" element={<ExecutionsPage />} />
           <Route path="/credentials" element={<CredentialsPage />} />
-          <Route path="/tags" element={<TagsPage />} />
           <Route path="/variables" element={<VariablesPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>

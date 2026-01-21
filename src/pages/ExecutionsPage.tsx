@@ -1,7 +1,7 @@
 import React from 'react';
 import { RefreshCw } from 'lucide-react';
 import { PageHeader } from '../components/layout';
-import { ExecutionFeed } from '../components/ExecutionFeed';
+import { ExecutionTable } from '../components/ExecutionTable';
 import { ExecutionDetailsPanel } from '../components/ExecutionDetailsPanel';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { useWorkflows, useExecutions } from '../hooks/useN8n';
@@ -28,22 +28,9 @@ export const ExecutionsPage: React.FC = () => {
     shouldFetchData ? refreshOptions : { autoRefresh: false }
   );
   const { data: executions, isLoading, refetch } = useExecutions(
-    { limit: 100 },
+    { limit: 200 },
     shouldFetchData ? refreshOptions : { autoRefresh: false }
   );
-
-  const workflowNameMap = React.useMemo(() => {
-    const map = new Map<string, string>();
-    workflows?.forEach(w => map.set(w.id, w.name));
-    return map;
-  }, [workflows]);
-
-  const enrichedExecutions = React.useMemo(() => {
-    return executions?.map(exec => ({
-      ...exec,
-      workflowName: exec.workflowName || workflowNameMap.get(exec.workflowId) || `Workflow ${exec.workflowId}`,
-    })) || [];
-  }, [executions, workflowNameMap]);
 
   const handleRefresh = () => {
     refetch();
@@ -71,8 +58,9 @@ export const ExecutionsPage: React.FC = () => {
       />
 
       <ErrorBoundary>
-        <ExecutionFeed
-          executions={enrichedExecutions}
+        <ExecutionTable
+          executions={executions || []}
+          workflows={workflows || []}
           isLoading={isLoading}
           onExecutionClick={handleExecutionClick}
         />

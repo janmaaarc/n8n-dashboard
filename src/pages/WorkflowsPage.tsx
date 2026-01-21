@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { PageHeader } from '../components/layout';
-import { WorkflowList } from '../components/WorkflowList';
+import { WorkflowTable } from '../components/WorkflowTable';
 import { ErrorBoundary } from '../components/ErrorBoundary';
-import { useWorkflows, useToggleWorkflow, useTriggerWorkflow } from '../hooks/useN8n';
+import { useWorkflows, useExecutions, useToggleWorkflow, useTriggerWorkflow } from '../hooks/useN8n';
 import { useSettings } from '../hooks/useSettings';
 import { useFavorites } from '../hooks/useFavorites';
 import { useAuth } from '../contexts/AuthContext';
@@ -25,14 +25,21 @@ export const WorkflowsPage: React.FC = () => {
 
   const shouldFetchData = !isSupabaseConfigured() || isAuthenticated;
 
-  const { data: workflows, isLoading, refetch } = useWorkflows(
+  const { data: workflows, isLoading: workflowsLoading, refetch: refetchWorkflows } = useWorkflows(
     shouldFetchData ? refreshOptions : { autoRefresh: false }
+  );
+  const { data: executions, isLoading: executionsLoading, refetch: refetchExecutions } = useExecutions(
+    { limit: 500 },
+    shouldFetchData ? { ...refreshOptions, refreshInterval: refreshOptions.refreshInterval } : { autoRefresh: false }
   );
   const toggleWorkflow = useToggleWorkflow();
   const triggerWorkflow = useTriggerWorkflow();
 
+  const isLoading = workflowsLoading || executionsLoading;
+
   const handleRefresh = () => {
-    refetch();
+    refetchWorkflows();
+    refetchExecutions();
     toast.info('Refreshing workflows...');
   };
 
@@ -81,8 +88,9 @@ export const WorkflowsPage: React.FC = () => {
       />
 
       <ErrorBoundary>
-        <WorkflowList
+        <WorkflowTable
           workflows={workflows || []}
+          executions={executions || []}
           isLoading={isLoading}
           onToggleActive={handleToggleWorkflow}
           onTrigger={handleTriggerWorkflow}

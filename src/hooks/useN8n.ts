@@ -74,10 +74,44 @@ export const useTriggerWorkflow = () => {
   });
 };
 
+const getWeekBoundaries = () => {
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const startOfThisWeek = new Date(now);
+  startOfThisWeek.setDate(now.getDate() - dayOfWeek);
+  startOfThisWeek.setHours(0, 0, 0, 0);
+
+  const startOfLastWeek = new Date(startOfThisWeek);
+  startOfLastWeek.setDate(startOfLastWeek.getDate() - 7);
+
+  return { startOfThisWeek, startOfLastWeek };
+};
+
+const calculateWeeklyStats = (executions: Execution[], startDate: Date, endDate: Date) => {
+  const weeklyExecutions = executions.filter((e) => {
+    const date = new Date(e.startedAt);
+    return date >= startDate && date < endDate;
+  });
+
+  const total = weeklyExecutions.length;
+  const successful = weeklyExecutions.filter((e) => e.status === 'success').length;
+  const errors = weeklyExecutions.filter((e) => e.status === 'error').length;
+  const successRate = total > 0 ? (successful / total) * 100 : 0;
+
+  return { total, successful, errors, successRate };
+};
+
 export const useDashboardStats = (
   workflows: Workflow[] | undefined,
   executions: Execution[] | undefined
 ): DashboardStats => {
+  const emptyTrends = {
+    workflows: { value: 0 },
+    executions: { value: 0 },
+    successRate: { value: 0 },
+    errors: { value: 0, isPositiveGood: false },
+  };
+
   if (!workflows || !executions) {
     return {
       totalWorkflows: 0,
@@ -85,6 +119,7 @@ export const useDashboardStats = (
       totalExecutions: 0,
       successRate: 0,
       recentErrors: 0,
+      trends: emptyTrends,
     };
   }
 
@@ -97,26 +132,33 @@ export const useDashboardStats = (
     : 0;
   const recentErrors = executions.filter((e) => e.status === 'error').length;
 
+  // Calculate weekly trends
+  const { startOfThisWeek, startOfLastWeek } = getWeekBoundaries();
+  const now = new Date();
+
+  const thisWeekStats = calculateWeeklyStats(executions, startOfThisWeek, now);
+  const lastWeekStats = calculateWeeklyStats(executions, startOfLastWeek, startOfThisWeek);
+
+  const trends = {
+    workflows: { value: 0 }, // Workflows don't typically have weekly trends
+    executions: { value: thisWeekStats.total - lastWeekStats.total },
+    successRate: {
+      value: Number((thisWeekStats.successRate - lastWeekStats.successRate).toFixed(1))
+    },
+    errors: {
+      value: thisWeekStats.errors - lastWeekStats.errors,
+      isPositiveGood: false
+    },
+  };
+
   return {
     totalWorkflows,
     activeWorkflows,
     totalExecutions,
     successRate,
     recentErrors,
+    trends,
   };
-};
-
-export const useTags = (options?: RefreshOptions) => {
-  const { autoRefresh = false, refreshInterval = 60 } = options || {};
-
-  return useQuery({
-    queryKey: ['tags'],
-    queryFn: async () => {
-      const response = await n8nApi.getTags();
-      return response.data;
-    },
-    refetchInterval: autoRefresh ? refreshInterval * 1000 : false,
-  });
 };
 
 export const useCredentials = (options?: RefreshOptions) => {

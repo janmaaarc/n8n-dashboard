@@ -53,12 +53,23 @@ export interface ExecutionSummary {
   running: number;
 }
 
+export interface TrendData {
+  value: number;
+  isPositiveGood?: boolean;
+}
+
 export interface DashboardStats {
   totalWorkflows: number;
   activeWorkflows: number;
   totalExecutions: number;
   successRate: number;
   recentErrors: number;
+  trends: {
+    workflows: TrendData;
+    executions: TrendData;
+    successRate: TrendData;
+    errors: TrendData;
+  };
 }
 
 export interface Credential {
