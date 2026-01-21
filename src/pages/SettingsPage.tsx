@@ -108,16 +108,6 @@ export const SettingsPage: React.FC = () => {
       <PageHeader
         title="Settings"
         description="Configure your n8n connection and preferences"
-        actions={
-          <button
-            onClick={handleSave}
-            disabled={saving || credentialsLoading}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-100 rounded-lg transition-colors disabled:opacity-50"
-          >
-            {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-            {saving ? 'Saving...' : 'Save Changes'}
-          </button>
-        }
       />
 
       <div className="max-w-2xl mx-auto space-y-6">
@@ -397,21 +387,32 @@ export const SettingsPage: React.FC = () => {
           </div>
         )}
 
-        {/* Danger Zone */}
-        <section className="bg-white dark:bg-neutral-900 rounded-lg border border-red-200 dark:border-red-500/20 p-6">
-          <h3 className="text-sm font-medium text-red-600 dark:text-red-400 mb-2">
-            Danger Zone
-          </h3>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
-            Reset all settings to their default values.
-          </p>
-          <button
-            onClick={handleReset}
-            disabled={saving}
-            className="px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-50"
-          >
-            Reset to Defaults
-          </button>
+        {/* Actions */}
+        <section className="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                Reset all settings to their default values.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleReset}
+                disabled={saving}
+                className="px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-50"
+              >
+                Reset to Defaults
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving || credentialsLoading}
+                className="flex items-center gap-2 px-4 py-1.5 text-sm font-medium text-white bg-neutral-900 dark:bg-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-100 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          </div>
         </section>
       </div>
     </>
