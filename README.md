@@ -71,13 +71,20 @@ A modern monitoring dashboard for n8n workflows built with React, TypeScript, an
   - View all scheduled workflow triggers
   - Parse cron expressions and intervals
   - Active/inactive status indicators
-  - Link to parent workflow
+  - Search/filter by workflow name, node, or schedule
+  - Copy workflow ID to clipboard
+  - Export schedules to CSV
+  - Pagination for active/inactive sections
+  - Link to parent workflow in n8n
 
 - **Webhooks**
   - List all webhook endpoints across workflows
   - Copy webhook URL to clipboard
+  - Copy workflow ID to clipboard
   - HTTP method badges (GET, POST, PUT, DELETE)
   - Authentication type indicators
+  - Search/filter by workflow name, URL, or method
+  - Export webhooks to CSV
   - Pagination for active/inactive sections
 
 - **Alerts**
@@ -102,8 +109,10 @@ A modern monitoring dashboard for n8n workflows built with React, TypeScript, an
 - **User Experience**
   - Command palette (Cmd/Ctrl+K) for quick navigation and actions
   - Keyboard shortcuts (R: refresh, /: search, ,: settings, D: dark mode, ?: help)
+  - Theme toggle in page header for quick access
   - Toast notifications for actions
-  - Loading states on action buttons
+  - Loading skeletons for smooth loading states
+  - Debounced search inputs for performance
   - Pagination for large lists
   - Monochrome design theme (dark/light mode)
   - Configurable auto-refresh interval
@@ -281,6 +290,7 @@ src/
 │   └── SettingsPage.tsx         # Full settings page
 ├── contexts/
 │   ├── AuthContext.tsx       # Authentication context
+│   ├── ThemeContext.tsx      # Theme state management
 │   └── SidebarContext.tsx    # Sidebar collapse state
 ├── hooks/
 │   ├── useN8n.ts             # API hooks (React Query)
@@ -291,11 +301,13 @@ src/
 │   ├── useSchedules.ts       # Parse schedule nodes from workflows
 │   ├── useWebhooks.ts        # Parse webhook nodes from workflows
 │   ├── useAlerts.ts          # Alert rules management (localStorage)
-│   └── useFavorites.ts       # Workflow favorites persistence
+│   ├── useFavorites.ts       # Workflow favorites persistence
+│   └── useDebounce.ts        # Debounce hook for search inputs
 ├── services/
 │   └── n8n.ts                # n8n API wrapper
 ├── lib/
-│   └── supabase.ts           # Supabase client
+│   ├── supabase.ts           # Supabase client
+│   └── utils.ts              # Shared utilities (getN8nUrl, exportToCSV, etc.)
 └── App.tsx                   # Route definitions
 
 api/
