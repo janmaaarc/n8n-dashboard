@@ -23,6 +23,7 @@ interface ExecutionTableProps {
   workflows: Workflow[];
   isLoading?: boolean;
   onExecutionClick: (execution: Execution) => void;
+  highlightId?: string | null;
 }
 
 const getN8nUrl = (): string => {
@@ -118,6 +119,7 @@ export const ExecutionTable: React.FC<ExecutionTableProps> = ({
   workflows,
   isLoading,
   onExecutionClick,
+  highlightId,
 }) => {
   const [search, setSearch] = useState('');
   const [sortColumn, setSortColumn] = useState<SortColumn>('startTime');
@@ -210,6 +212,22 @@ export const ExecutionTable: React.FC<ExecutionTableProps> = ({
 
     return result;
   }, [executions, search, filterBy, sortColumn, sortDirection, workflowNameMap]);
+
+  // Navigate to page with highlighted item and scroll to it
+  useEffect(() => {
+    if (highlightId && filteredAndSortedExecutions.length > 0) {
+      const index = filteredAndSortedExecutions.findIndex(e => e.id === highlightId);
+      if (index !== -1) {
+        const page = Math.floor(index / ITEMS_PER_PAGE) + 1;
+        setCurrentPage(page);
+        // Scroll to the row after a short delay
+        setTimeout(() => {
+          const row = document.querySelector(`[data-execution-id="${highlightId}"]`);
+          row?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      }
+    }
+  }, [highlightId, filteredAndSortedExecutions]);
 
   const totalPages = Math.ceil(filteredAndSortedExecutions.length / ITEMS_PER_PAGE);
   const paginatedExecutions = filteredAndSortedExecutions.slice(
@@ -333,11 +351,17 @@ export const ExecutionTable: React.FC<ExecutionTableProps> = ({
                 {paginatedExecutions.map((execution) => {
                   const workflowName = execution.workflowName || workflowNameMap.get(execution.workflowId) || `Workflow ${execution.workflowId}`;
                   const statusConfig = getStatusConfig(execution.status);
+                  const isHighlighted = highlightId === execution.id;
 
                   return (
                     <tr
                       key={execution.id}
-                      className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer"
+                      data-execution-id={execution.id}
+                      className={`transition-colors cursor-pointer ${
+                        isHighlighted
+                          ? 'bg-amber-50 dark:bg-amber-500/10 ring-1 ring-amber-200 dark:ring-amber-500/30'
+                          : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
+                      }`}
                       onClick={() => onExecutionClick(execution)}
                     >
                       {/* Workflow */}

@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { RefreshCw } from 'lucide-react';
 import { PageHeader } from '../components/layout';
 import { WorkflowTable } from '../components/WorkflowTable';
@@ -12,6 +13,8 @@ import { useToast } from '../components/Toast';
 import type { Workflow as WorkflowType } from '../types';
 
 export const WorkflowsPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const highlightId = searchParams.get('highlight');
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { isAuthenticated } = useAuth();
   const { settings } = useSettings();
@@ -99,6 +102,7 @@ export const WorkflowsPage: React.FC = () => {
           favorites={favorites}
           onToggleFavorite={toggleFavorite}
           searchInputRef={searchInputRef}
+          highlightId={highlightId}
         />
       </ErrorBoundary>
     </>

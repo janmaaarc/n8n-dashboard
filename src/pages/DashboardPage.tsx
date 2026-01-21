@@ -6,7 +6,6 @@ import { StatCard } from '../components/StatCard';
 import { Section } from '../components/Section';
 import { ExecutionFeed } from '../components/ExecutionFeed';
 import { DashboardWorkflowList } from '../components/DashboardWorkflowList';
-import { ExecutionDetailsPanel } from '../components/ExecutionDetailsPanel';
 import { ExecutionChart } from '../components/ExecutionChart';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { useWorkflows, useExecutions, useToggleWorkflow, useTriggerWorkflow, useDashboardStats } from '../hooks/useN8n';
@@ -23,7 +22,6 @@ interface DashboardPageProps {
 }
 
 export const DashboardPage: React.FC<DashboardPageProps> = ({ onShowSettings }) => {
-  const [selectedExecution, setSelectedExecution] = React.useState<Execution | null>(null);
   const navigate = useNavigate();
 
   const { isAuthenticated } = useAuth();
@@ -87,7 +85,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onShowSettings }) 
   };
 
   const handleExecutionClick = (execution: Execution) => {
-    setSelectedExecution(execution);
+    navigate(`/executions?highlight=${execution.id}`);
   };
 
   const workflowNameMap = React.useMemo(() => {
@@ -192,7 +190,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onShowSettings }) 
       {/* Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Workflows */}
-        <Section title="Workflows">
+        <Section title="Recent Workflows">
           <ErrorBoundary>
             <DashboardWorkflowList
               workflows={workflows || []}
@@ -218,6 +216,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onShowSettings }) 
                 onExecutionClick={handleExecutionClick}
                 itemsPerPage={6}
                 showFilter={false}
+                showPagination={false}
               />
             </ErrorBoundary>
           </Section>
@@ -229,6 +228,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onShowSettings }) 
                   executions={errorExecutions}
                   onExecutionClick={handleExecutionClick}
                   showFilter={false}
+                  showPagination={false}
                   itemsPerPage={4}
                 />
               </ErrorBoundary>
@@ -236,12 +236,6 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onShowSettings }) 
           )}
         </div>
       </div>
-
-      {/* Execution Details Panel */}
-      <ExecutionDetailsPanel
-        execution={selectedExecution}
-        onClose={() => setSelectedExecution(null)}
-      />
     </>
   );
 };

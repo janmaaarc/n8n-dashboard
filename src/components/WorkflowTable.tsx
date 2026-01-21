@@ -92,6 +92,7 @@ interface WorkflowTableProps {
   favorites: Set<string>;
   onToggleFavorite: (id: string) => void;
   searchInputRef?: React.RefObject<HTMLInputElement | null>;
+  highlightId?: string | null;
 }
 
 const getN8nUrl = (): string => {
@@ -116,6 +117,7 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
   favorites,
   onToggleFavorite,
   searchInputRef,
+  highlightId,
 }) => {
   const [search, setSearch] = useState('');
   const [sortColumn, setSortColumn] = useState<SortColumn>('favorite');
@@ -230,6 +232,22 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
 
     return result;
   }, [workflows, search, filterBy, sortColumn, sortDirection, favorites, selectedTag, workflowStatsMap]);
+
+  // Navigate to page with highlighted item and scroll to it
+  useEffect(() => {
+    if (highlightId && filteredAndSortedWorkflows.length > 0) {
+      const index = filteredAndSortedWorkflows.findIndex(w => w.id === highlightId);
+      if (index !== -1) {
+        const page = Math.floor(index / ITEMS_PER_PAGE) + 1;
+        setCurrentPage(page);
+        // Scroll to the row after a short delay
+        setTimeout(() => {
+          const row = document.querySelector(`[data-workflow-id="${highlightId}"]`);
+          row?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      }
+    }
+  }, [highlightId, filteredAndSortedWorkflows]);
 
   const totalPages = Math.ceil(filteredAndSortedWorkflows.length / ITEMS_PER_PAGE);
   const paginatedWorkflows = filteredAndSortedWorkflows.slice(
@@ -481,10 +499,17 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
                   const stats = workflowStatsMap.get(workflow.id) || { totalExecutions: 0, successRate: 0, lastExecution: null };
                   const triggerInfo = getTriggerInfo(workflow.nodes);
 
+                  const isHighlighted = highlightId === workflow.id;
+
                   return (
                     <tr
                       key={workflow.id}
-                      className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+                      data-workflow-id={workflow.id}
+                      className={`transition-colors ${
+                        isHighlighted
+                          ? 'bg-amber-50 dark:bg-amber-500/10 ring-1 ring-amber-200 dark:ring-amber-500/30'
+                          : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
+                      }`}
                     >
                       {/* Checkbox */}
                       <td className="px-3 py-3">

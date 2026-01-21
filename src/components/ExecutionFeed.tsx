@@ -12,6 +12,7 @@ interface ExecutionFeedProps {
   onExecutionClick?: (execution: Execution) => void;
   itemsPerPage?: number;
   showFilter?: boolean;
+  showPagination?: boolean;
 }
 
 const statusConfig = {
@@ -50,6 +51,7 @@ export const ExecutionFeed: React.FC<ExecutionFeedProps> = ({
   onExecutionClick,
   itemsPerPage = 10,
   showFilter = true,
+  showPagination = true,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
@@ -168,7 +170,7 @@ export const ExecutionFeed: React.FC<ExecutionFeedProps> = ({
       )}
 
       {/* Pagination */}
-      {totalPages > 1 && (
+      {showPagination && totalPages > 1 && (
         <div className="flex items-center justify-between">
           <span className="text-xs text-neutral-500 dark:text-neutral-400">
             {currentPage} / {totalPages}

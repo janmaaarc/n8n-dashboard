@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { RefreshCw } from 'lucide-react';
 import { PageHeader } from '../components/layout';
 import { ExecutionTable } from '../components/ExecutionTable';
@@ -12,6 +13,8 @@ import { useToast } from '../components/Toast';
 import type { Execution } from '../types';
 
 export const ExecutionsPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const highlightId = searchParams.get('highlight');
   const [selectedExecution, setSelectedExecution] = React.useState<Execution | null>(null);
   const { isAuthenticated } = useAuth();
   const { settings } = useSettings();
@@ -63,6 +66,7 @@ export const ExecutionsPage: React.FC = () => {
           workflows={workflows || []}
           isLoading={isLoading}
           onExecutionClick={handleExecutionClick}
+          highlightId={highlightId}
         />
       </ErrorBoundary>
 
