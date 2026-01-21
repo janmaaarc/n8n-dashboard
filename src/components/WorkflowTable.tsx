@@ -555,12 +555,13 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
 
                       {/* Status */}
                       <td className="px-3 py-3">
-                        <span className="inline-flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400">
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              workflow.active ? 'bg-green-500' : 'bg-neutral-400'
-                            }`}
-                          />
+                        <span
+                          className={`inline-flex text-xs px-1.5 py-0.5 rounded ${
+                            workflow.active
+                              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
+                              : 'bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400'
+                          }`}
+                        >
                           {workflow.active ? 'Active' : 'Inactive'}
                         </span>
                       </td>
