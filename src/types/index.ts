@@ -60,3 +60,18 @@ export interface DashboardStats {
   successRate: number;
   recentErrors: number;
 }
+
+export interface Credential {
+  id: string;
+  name: string;
+  type: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Variable {
+  id: string;
+  key: string;
+  value: string;
+  type: string;
+}

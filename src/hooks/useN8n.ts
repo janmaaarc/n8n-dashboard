@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { n8nApi } from '../services/n8n';
-import type { Workflow, Execution, DashboardStats } from '../types';
+import type { Workflow, Execution, DashboardStats, Tag, Credential, Variable } from '../types';
 
 interface RefreshOptions {
   autoRefresh?: boolean;
@@ -104,4 +104,43 @@ export const useDashboardStats = (
     successRate,
     recentErrors,
   };
+};
+
+export const useTags = (options?: RefreshOptions) => {
+  const { autoRefresh = false, refreshInterval = 60 } = options || {};
+
+  return useQuery({
+    queryKey: ['tags'],
+    queryFn: async () => {
+      const response = await n8nApi.getTags();
+      return response.data;
+    },
+    refetchInterval: autoRefresh ? refreshInterval * 1000 : false,
+  });
+};
+
+export const useCredentials = (options?: RefreshOptions) => {
+  const { autoRefresh = false, refreshInterval = 60 } = options || {};
+
+  return useQuery({
+    queryKey: ['credentials'],
+    queryFn: async () => {
+      const response = await n8nApi.getCredentials();
+      return response.data;
+    },
+    refetchInterval: autoRefresh ? refreshInterval * 1000 : false,
+  });
+};
+
+export const useVariables = (options?: RefreshOptions) => {
+  const { autoRefresh = false, refreshInterval = 60 } = options || {};
+
+  return useQuery({
+    queryKey: ['variables'],
+    queryFn: async () => {
+      const response = await n8nApi.getVariables();
+      return response.data;
+    },
+    refetchInterval: autoRefresh ? refreshInterval * 1000 : false,
+  });
 };

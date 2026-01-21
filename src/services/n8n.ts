@@ -1,4 +1,4 @@
-import type { Workflow, Execution } from '../types';
+import type { Workflow, Execution, Tag, Credential, Variable } from '../types';
 import { getStoredSettings } from '../hooks/useSettings';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
@@ -145,5 +145,44 @@ export const n8nApi = {
     } catch {
       return false;
     }
+  },
+
+  // Tags
+  async getTags(): Promise<{ data: Tag[] }> {
+    const res = await fetch(`${getBaseUrl()}/api/v1/tags`, {
+      headers: await getHeaders(),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch tags: ${res.statusText}`);
+    }
+
+    return res.json();
+  },
+
+  // Credentials (note: n8n API only returns metadata, not actual secrets)
+  async getCredentials(): Promise<{ data: Credential[] }> {
+    const res = await fetch(`${getBaseUrl()}/api/v1/credentials`, {
+      headers: await getHeaders(),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch credentials: ${res.statusText}`);
+    }
+
+    return res.json();
+  },
+
+  // Variables (requires n8n 1.x+)
+  async getVariables(): Promise<{ data: Variable[] }> {
+    const res = await fetch(`${getBaseUrl()}/api/v1/variables`, {
+      headers: await getHeaders(),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch variables: ${res.statusText}`);
+    }
+
+    return res.json();
   },
 };
