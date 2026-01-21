@@ -28,10 +28,18 @@ export const ErrorLogPage: React.FC = () => {
 
   const shouldFetchData = !isSupabaseConfigured() || isAuthenticated;
 
-  const { data: executions, isLoading, refetch } = useExecutions(
-    { limit: 500, status: 'error' },
+  // Fetch all executions and filter client-side for errors
+  // The n8n API status filter may not work reliably in all versions
+  const { data: allExecutions, isLoading, refetch } = useExecutions(
+    { limit: 500 },
     shouldFetchData ? refreshOptions : { autoRefresh: false }
   );
+
+  // Filter for error executions client-side
+  const executions = useMemo(() => {
+    if (!allExecutions) return [];
+    return allExecutions.filter(e => e.status === 'error');
+  }, [allExecutions]);
 
   const { data: workflows } = useWorkflows(
     shouldFetchData ? { autoRefresh: false } : { autoRefresh: false }
