@@ -234,7 +234,10 @@ export const n8nApi = {
       throw new Error(`Failed to fetch credentials: ${res.statusText}`);
     }
 
-    return res.json();
+    const response = await res.json();
+    // Handle both array response and { data: [...] } response formats
+    const data = Array.isArray(response) ? response : (response.data || []);
+    return { data };
   },
 
   // Variables (requires n8n 1.x+)
@@ -250,6 +253,9 @@ export const n8nApi = {
       throw new Error(`Failed to fetch variables: ${res.statusText}`);
     }
 
-    return res.json();
+    const response = await res.json();
+    // Handle both array response and { data: [...] } response formats
+    const data = Array.isArray(response) ? response : (response.data || []);
+    return { data };
   },
 };

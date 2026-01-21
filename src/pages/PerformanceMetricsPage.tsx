@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { RefreshCw, Clock, TrendingUp, TrendingDown, Minus, Zap } from 'lucide-react';
+import { RefreshCw, Clock, TrendingUp, TrendingDown, Minus, Zap, Download } from 'lucide-react';
 import {
   LineChart,
   Line,
@@ -193,6 +193,39 @@ export const PerformanceMetricsPage: React.FC = () => {
     toast.info('Refreshing performance data...');
   };
 
+  const exportToCSV = () => {
+    if (workflowMetrics.length === 0) {
+      toast.error('No data to export');
+      return;
+    }
+
+    const headers = ['Workflow Name', 'Workflow ID', 'Executions', 'Avg Duration (ms)', 'Min Duration (ms)', 'Max Duration (ms)', 'Success Rate (%)'];
+    const rows = workflowMetrics.map(m => [
+      m.workflowName,
+      m.workflowId,
+      m.executionCount,
+      Math.round(m.avgDuration),
+      Math.round(m.minDuration),
+      Math.round(m.maxDuration),
+      m.successRate.toFixed(2),
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `performance-metrics-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+
+    toast.success('Exported performance metrics');
+  };
+
   const TrendIndicator = ({ value, inverted = false }: { value: number; inverted?: boolean }) => {
     const isPositive = inverted ? value < 0 : value > 0;
     const isNeutral = Math.abs(value) < 1;
@@ -208,13 +241,23 @@ export const PerformanceMetricsPage: React.FC = () => {
         title="Performance Metrics"
         description="Monitor execution times and success rates"
         actions={
-          <button
-            onClick={handleRefresh}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
-          >
-            <RefreshCw size={16} />
-            Refresh
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={exportToCSV}
+              disabled={workflowMetrics.length === 0}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors disabled:opacity-50"
+            >
+              <Download size={16} />
+              Export CSV
+            </button>
+            <button
+              onClick={handleRefresh}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+            >
+              <RefreshCw size={16} />
+              Refresh
+            </button>
+          </div>
         }
       />
 

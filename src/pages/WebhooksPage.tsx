@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { RefreshCw, Webhook, Copy, Check, ExternalLink, Power, PowerOff, Globe, Lock } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { RefreshCw, Webhook, Copy, Check, ExternalLink, Power, PowerOff, Globe, Lock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/layout';
 import { ErrorBoundary } from '../components/ErrorBoundary';
@@ -111,10 +111,14 @@ const WebhookCard: React.FC<{ webhook: WebhookInfo; onCopy: (url: string) => voi
   );
 };
 
+const ITEMS_PER_PAGE = 10;
+
 export const WebhooksPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const { settings } = useSettings();
   const toast = useToast();
+  const [activePage, setActivePage] = useState(1);
+  const [inactivePage, setInactivePage] = useState(1);
 
   const refreshOptions = {
     autoRefresh: settings.autoRefresh,
@@ -138,6 +142,19 @@ export const WebhooksPage: React.FC = () => {
 
   const activeWebhooks = webhooks.filter(w => w.workflowActive);
   const inactiveWebhooks = webhooks.filter(w => !w.workflowActive);
+
+  const activeTotalPages = Math.ceil(activeWebhooks.length / ITEMS_PER_PAGE);
+  const inactiveTotalPages = Math.ceil(inactiveWebhooks.length / ITEMS_PER_PAGE);
+
+  const paginatedActiveWebhooks = useMemo(() => {
+    const start = (activePage - 1) * ITEMS_PER_PAGE;
+    return activeWebhooks.slice(start, start + ITEMS_PER_PAGE);
+  }, [activeWebhooks, activePage]);
+
+  const paginatedInactiveWebhooks = useMemo(() => {
+    const start = (inactivePage - 1) * ITEMS_PER_PAGE;
+    return inactiveWebhooks.slice(start, start + ITEMS_PER_PAGE);
+  }, [inactiveWebhooks, inactivePage]);
 
   return (
     <>
@@ -206,14 +223,39 @@ export const WebhooksPage: React.FC = () => {
             {/* Active Webhooks */}
             {activeWebhooks.length > 0 && (
               <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-2 h-2 rounded-full bg-green-500" />
-                  <h3 className="text-sm font-medium text-neutral-900 dark:text-white">
-                    Active Webhooks ({activeWebhooks.length})
-                  </h3>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                    <h3 className="text-sm font-medium text-neutral-900 dark:text-white">
+                      Active Webhooks ({activeWebhooks.length})
+                    </h3>
+                  </div>
+                  {activeTotalPages > 1 && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                        Page {activePage} of {activeTotalPages}
+                      </span>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => setActivePage(p => Math.max(1, p - 1))}
+                          disabled={activePage === 1}
+                          className="p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <ChevronLeft size={16} />
+                        </button>
+                        <button
+                          onClick={() => setActivePage(p => Math.min(activeTotalPages, p + 1))}
+                          disabled={activePage === activeTotalPages}
+                          className="p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <ChevronRight size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="grid gap-3">
-                  {activeWebhooks.map((webhook, index) => (
+                  {paginatedActiveWebhooks.map((webhook, index) => (
                     <WebhookCard
                       key={`${webhook.workflowId}-${index}`}
                       webhook={webhook}
@@ -227,14 +269,39 @@ export const WebhooksPage: React.FC = () => {
             {/* Inactive Webhooks */}
             {inactiveWebhooks.length > 0 && (
               <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-2 h-2 rounded-full bg-neutral-400" />
-                  <h3 className="text-sm font-medium text-neutral-900 dark:text-white">
-                    Inactive Webhooks ({inactiveWebhooks.length})
-                  </h3>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-neutral-400" />
+                    <h3 className="text-sm font-medium text-neutral-900 dark:text-white">
+                      Inactive Webhooks ({inactiveWebhooks.length})
+                    </h3>
+                  </div>
+                  {inactiveTotalPages > 1 && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                        Page {inactivePage} of {inactiveTotalPages}
+                      </span>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => setInactivePage(p => Math.max(1, p - 1))}
+                          disabled={inactivePage === 1}
+                          className="p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <ChevronLeft size={16} />
+                        </button>
+                        <button
+                          onClick={() => setInactivePage(p => Math.min(inactiveTotalPages, p + 1))}
+                          disabled={inactivePage === inactiveTotalPages}
+                          className="p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <ChevronRight size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="grid gap-3">
-                  {inactiveWebhooks.map((webhook, index) => (
+                  {paginatedInactiveWebhooks.map((webhook, index) => (
                     <WebhookCard
                       key={`${webhook.workflowId}-${index}`}
                       webhook={webhook}
