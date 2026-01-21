@@ -9,7 +9,7 @@ interface PageHeaderProps {
   showThemeToggle?: boolean;
 }
 
-export const PageHeader: React.FC<PageHeaderProps> = ({ title, description, actions, showThemeToggle = true }) => {
+export const PageHeader: React.FC<PageHeaderProps> = ({ title, description, actions, showThemeToggle = false }) => {
   const { darkMode, toggleTheme } = useTheme();
 
   return (
