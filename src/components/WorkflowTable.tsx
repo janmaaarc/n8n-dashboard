@@ -331,6 +331,22 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => exportWorkflowsToCSV(filteredAndSortedWorkflows)}
+            className="px-2 py-2 text-xs rounded-md text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+            title="Export to CSV"
+          >
+            CSV
+          </button>
+          <button
+            onClick={() => exportWorkflowsToJSON(filteredAndSortedWorkflows)}
+            className="px-2 py-2 text-xs rounded-md text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+            title="Export to JSON"
+          >
+            JSON
+          </button>
+        </div>
       </div>
 
       {/* Tag Filter */}
@@ -474,23 +490,7 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
                     </button>
                   </th>
                   <th className="px-3 py-2 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400">Actions</span>
-                      <button
-                        onClick={() => exportWorkflowsToCSV(filteredAndSortedWorkflows)}
-                        className="px-1.5 py-0.5 text-xs rounded text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-200 dark:hover:bg-neutral-700"
-                        title="Export to CSV"
-                      >
-                        CSV
-                      </button>
-                      <button
-                        onClick={() => exportWorkflowsToJSON(filteredAndSortedWorkflows)}
-                        className="px-1.5 py-0.5 text-xs rounded text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-200 dark:hover:bg-neutral-700"
-                        title="Export to JSON"
-                      >
-                        JSON
-                      </button>
-                    </div>
+                    <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400">Actions</span>
                   </th>
                 </tr>
               </thead>
@@ -612,12 +612,12 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
 
                       {/* Actions */}
                       <td className="px-3 py-3">
-                        <div className="flex items-center justify-end gap-1">
+                        <div className="flex items-center justify-end gap-0.5">
                           {workflow.active && onTrigger && (
                             <button
                               onClick={() => onTrigger(workflow)}
                               disabled={triggerLoadingId === workflow.id}
-                              className="p-1.5 rounded text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="p-1.5 rounded text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-200 dark:hover:bg-neutral-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                               title="Run workflow"
                             >
                               {triggerLoadingId === workflow.id ? (
@@ -630,7 +630,11 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
                           <button
                             onClick={() => onToggleActive?.(workflow)}
                             disabled={toggleLoadingId === workflow.id}
-                            className="p-1.5 rounded text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className={`p-1.5 rounded hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                              workflow.active
+                                ? 'text-amber-600 dark:text-amber-500'
+                                : 'text-emerald-600 dark:text-emerald-500'
+                            }`}
                             title={workflow.active ? 'Deactivate' : 'Activate'}
                           >
                             {toggleLoadingId === workflow.id ? (
@@ -645,7 +649,7 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
                             href={`${getN8nUrl()}/workflow/${workflow.id}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-1.5 rounded text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                            className="p-1.5 rounded text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 dark:text-neutral-500 dark:hover:text-neutral-300 dark:hover:bg-neutral-700 transition-colors"
                             title="Open in n8n"
                           >
                             <ExternalLink size={14} />
