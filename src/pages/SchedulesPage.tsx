@@ -1,5 +1,5 @@
-import React from 'react';
-import { RefreshCw, Calendar, Clock, ExternalLink, Power, PowerOff } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { RefreshCw, Calendar, Clock, ExternalLink, Power, PowerOff, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PageHeader } from '../components/layout';
 import { ErrorBoundary } from '../components/ErrorBoundary';
@@ -71,10 +71,14 @@ const getNodeTypeLabel = (nodeType: string): string => {
   return nodeType.split('.').pop() || nodeType;
 };
 
+const ITEMS_PER_PAGE = 10;
+
 export const SchedulesPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const { settings } = useSettings();
   const toast = useToast();
+  const [activePage, setActivePage] = useState(1);
+  const [inactivePage, setInactivePage] = useState(1);
 
   const refreshOptions = {
     autoRefresh: settings.autoRefresh,
@@ -94,6 +98,19 @@ export const SchedulesPage: React.FC = () => {
 
   const activeSchedules = schedules.filter(s => s.workflowActive);
   const inactiveSchedules = schedules.filter(s => !s.workflowActive);
+
+  const activeTotalPages = Math.ceil(activeSchedules.length / ITEMS_PER_PAGE);
+  const inactiveTotalPages = Math.ceil(inactiveSchedules.length / ITEMS_PER_PAGE);
+
+  const paginatedActiveSchedules = useMemo(() => {
+    const start = (activePage - 1) * ITEMS_PER_PAGE;
+    return activeSchedules.slice(start, start + ITEMS_PER_PAGE);
+  }, [activeSchedules, activePage]);
+
+  const paginatedInactiveSchedules = useMemo(() => {
+    const start = (inactivePage - 1) * ITEMS_PER_PAGE;
+    return inactiveSchedules.slice(start, start + ITEMS_PER_PAGE);
+  }, [inactiveSchedules, inactivePage]);
 
   return (
     <>
@@ -166,15 +183,35 @@ export const SchedulesPage: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-green-500" />
                     <h3 className="text-sm font-medium text-neutral-900 dark:text-white">
-                      Active Schedules
+                      Active Schedules ({activeSchedules.length})
                     </h3>
                   </div>
-                  <span className="text-xs text-neutral-500 dark:text-neutral-400 px-2 py-1 bg-neutral-100 dark:bg-neutral-800 rounded">
-                    {activeSchedules.length}
-                  </span>
+                  {activeTotalPages > 1 && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                        Page {activePage} of {activeTotalPages}
+                      </span>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => setActivePage(p => Math.max(1, p - 1))}
+                          disabled={activePage === 1}
+                          className="p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <ChevronLeft size={16} />
+                        </button>
+                        <button
+                          onClick={() => setActivePage(p => Math.min(activeTotalPages, p + 1))}
+                          disabled={activePage === activeTotalPages}
+                          className="p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <ChevronRight size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="divide-y divide-neutral-200 dark:divide-neutral-800">
-                  {activeSchedules.map((schedule, index) => (
+                  {paginatedActiveSchedules.map((schedule, index) => (
                     <div
                       key={`${schedule.workflowId}-${index}`}
                       className="px-4 py-3 flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
@@ -224,15 +261,35 @@ export const SchedulesPage: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-neutral-400" />
                     <h3 className="text-sm font-medium text-neutral-900 dark:text-white">
-                      Inactive Schedules
+                      Inactive Schedules ({inactiveSchedules.length})
                     </h3>
                   </div>
-                  <span className="text-xs text-neutral-500 dark:text-neutral-400 px-2 py-1 bg-neutral-100 dark:bg-neutral-800 rounded">
-                    {inactiveSchedules.length}
-                  </span>
+                  {inactiveTotalPages > 1 && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                        Page {inactivePage} of {inactiveTotalPages}
+                      </span>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => setInactivePage(p => Math.max(1, p - 1))}
+                          disabled={inactivePage === 1}
+                          className="p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <ChevronLeft size={16} />
+                        </button>
+                        <button
+                          onClick={() => setInactivePage(p => Math.min(inactiveTotalPages, p + 1))}
+                          disabled={inactivePage === inactiveTotalPages}
+                          className="p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <ChevronRight size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="divide-y divide-neutral-200 dark:divide-neutral-800">
-                  {inactiveSchedules.map((schedule, index) => (
+                  {paginatedInactiveSchedules.map((schedule, index) => (
                     <div
                       key={`${schedule.workflowId}-${index}`}
                       className="px-4 py-3 flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-800/50 opacity-60"
