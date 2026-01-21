@@ -217,7 +217,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onShowSettings }) 
                 executions={recentExecutions}
                 isLoading={executionsLoading}
                 onExecutionClick={handleExecutionClick}
-                itemsPerPage={7}
+                itemsPerPage={6}
                 showFilter={false}
                 showPagination={false}
               />

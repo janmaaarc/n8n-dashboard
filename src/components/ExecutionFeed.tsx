@@ -141,31 +141,56 @@ export const ExecutionFeed: React.FC<ExecutionFeedProps> = ({
           </p>
         </div>
       ) : (
-        <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 divide-y divide-neutral-200 dark:divide-neutral-800">
-          {paginatedExecutions.map((exec) => {
-            const status = statusConfig[exec.status] || statusConfig.waiting;
+        <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/50">
+                <th className="w-6 px-3 py-2"></th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-neutral-500 dark:text-neutral-400">Workflow</th>
+                <th className="px-3 py-2 text-right text-xs font-medium text-neutral-500 dark:text-neutral-400">Duration</th>
+                <th className="px-3 py-2 text-right text-xs font-medium text-neutral-500 dark:text-neutral-400">Time</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
+              {paginatedExecutions.map((exec) => {
+                const status = statusConfig[exec.status] || statusConfig.waiting;
 
-            return (
-              <button
-                key={exec.id}
-                onClick={() => onExecutionClick?.(exec)}
-                className="w-full text-left px-4 py-2.5 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800/50 cursor-pointer"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${status.dotClass}`} />
-                    <span className="text-sm text-neutral-900 dark:text-white truncate">
-                      {exec.workflowName || `Workflow ${exec.workflowId}`}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 flex-shrink-0 text-xs text-neutral-500 dark:text-neutral-400">
-                    <span className="font-mono">{formatDuration(exec.startedAt, exec.stoppedAt)}</span>
-                    <span>{formatDistanceToNow(exec.startedAt)}</span>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
+                return (
+                  <tr
+                    key={exec.id}
+                    onClick={() => onExecutionClick?.(exec)}
+                    className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer"
+                  >
+                    {/* Status */}
+                    <td className="px-3 py-2">
+                      <span className={`w-2 h-2 rounded-full inline-block ${status.dotClass}`} />
+                    </td>
+
+                    {/* Workflow Name */}
+                    <td className="px-3 py-2">
+                      <span className="text-sm text-neutral-900 dark:text-white truncate block max-w-[180px]">
+                        {exec.workflowName || `Workflow ${exec.workflowId}`}
+                      </span>
+                    </td>
+
+                    {/* Duration */}
+                    <td className="px-3 py-2 text-right">
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400 font-mono">
+                        {formatDuration(exec.startedAt, exec.stoppedAt)}
+                      </span>
+                    </td>
+
+                    {/* Time */}
+                    <td className="px-3 py-2 text-right">
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                        {formatDistanceToNow(exec.startedAt)}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 
