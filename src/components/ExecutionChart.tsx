@@ -128,19 +128,19 @@ export const ExecutionChart: React.FC<ExecutionChartProps> = ({ executions, isLo
               <Area
                 type="monotone"
                 dataKey="success"
-                stroke="#525252"
+                stroke="#10b981"
                 strokeWidth={1.5}
-                fill="#e5e5e5"
-                fillOpacity={0.5}
+                fill="#10b981"
+                fillOpacity={0.2}
                 name="Success"
               />
               <Area
                 type="monotone"
                 dataKey="error"
-                stroke="#a3a3a3"
+                stroke="#ef4444"
                 strokeWidth={1.5}
-                fill="#f5f5f5"
-                fillOpacity={0.3}
+                fill="#ef4444"
+                fillOpacity={0.2}
                 name="Errors"
               />
             </AreaChart>
