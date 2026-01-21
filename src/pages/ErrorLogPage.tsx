@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { RefreshCw, AlertCircle, ExternalLink, RotateCcw, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Filter, Check } from 'lucide-react';
+import { RefreshCw, AlertCircle, ExternalLink, RotateCcw, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { PageHeader } from '../components/layout';
@@ -234,40 +234,21 @@ export const ErrorLogPage: React.FC = () => {
             </div>
           ) : (
             <>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={selectAllOnPage}
-                    className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${
-                      allOnPageSelected
-                        ? 'bg-neutral-900 border-neutral-900 text-white dark:bg-white dark:border-white dark:text-neutral-900'
-                        : 'border-neutral-300 dark:border-neutral-600 hover:border-neutral-900 dark:hover:border-white'
-                    }`}
-                    title={allOnPageSelected ? 'Deselect all on page' : 'Select all on page'}
-                  >
-                    {allOnPageSelected && <Check size={12} />}
-                  </button>
-                  <div className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
-                    <Filter size={14} />
-                    <span>
-                      Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, filteredErrors.length)} of {filteredErrors.length} error{filteredErrors.length !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-neutral-500 dark:text-neutral-400">Per page:</span>
-                  <select
-                    value={itemsPerPage}
-                    onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                    className="px-2 py-1 text-sm border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
-                  >
-                    {ITEMS_PER_PAGE_OPTIONS.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={selectAllOnPage}
+                  className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${
+                    allOnPageSelected
+                      ? 'bg-neutral-900 border-neutral-900 text-white dark:bg-white dark:border-white dark:text-neutral-900'
+                      : 'border-neutral-300 dark:border-neutral-600 hover:border-neutral-900 dark:hover:border-white'
+                  }`}
+                  title={allOnPageSelected ? 'Deselect all on page' : 'Select all on page'}
+                >
+                  {allOnPageSelected && <Check size={12} />}
+                </button>
+                <span className="text-sm text-neutral-500 dark:text-neutral-400">
+                  {filteredErrors.length} error{filteredErrors.length !== 1 ? 's' : ''}
+                </span>
               </div>
 
               {/* Bulk Action Bar */}
@@ -382,19 +363,26 @@ export const ErrorLogPage: React.FC = () => {
               {/* Pagination Controls */}
               {totalPages > 1 && (
                 <div className="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-neutral-800">
-                  <div className="text-sm text-neutral-500 dark:text-neutral-400">
-                    Page {currentPage} of {totalPages}
+                  <div className="flex items-center gap-4">
+                    <div className="text-sm text-neutral-500 dark:text-neutral-400">
+                      Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, filteredErrors.length)} of {filteredErrors.length}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-neutral-500 dark:text-neutral-400">Per page:</span>
+                      <select
+                        value={itemsPerPage}
+                        onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                        className="px-2 py-1 text-sm border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                      >
+                        {ITEMS_PER_PAGE_OPTIONS.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => handlePageChange(1)}
-                      disabled={currentPage === 1}
-                      className="p-1.5 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                      title="First page"
-                    >
-                      <ChevronLeft size={16} />
-                      <ChevronLeft size={16} className="-ml-3" />
-                    </button>
                     <button
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
@@ -403,36 +391,9 @@ export const ErrorLogPage: React.FC = () => {
                     >
                       <ChevronLeft size={16} />
                     </button>
-
-                    {/* Page numbers */}
-                    <div className="flex items-center gap-1 mx-2">
-                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        let pageNum: number;
-                        if (totalPages <= 5) {
-                          pageNum = i + 1;
-                        } else if (currentPage <= 3) {
-                          pageNum = i + 1;
-                        } else if (currentPage >= totalPages - 2) {
-                          pageNum = totalPages - 4 + i;
-                        } else {
-                          pageNum = currentPage - 2 + i;
-                        }
-                        return (
-                          <button
-                            key={pageNum}
-                            onClick={() => handlePageChange(pageNum)}
-                            className={`min-w-[32px] h-8 px-2 text-sm font-medium rounded transition-colors ${
-                              currentPage === pageNum
-                                ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900'
-                                : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-                            }`}
-                          >
-                            {pageNum}
-                          </button>
-                        );
-                      })}
-                    </div>
-
+                    <span className="text-sm text-neutral-500 dark:text-neutral-400 px-2">
+                      {currentPage} / {totalPages}
+                    </span>
                     <button
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
@@ -440,15 +401,6 @@ export const ErrorLogPage: React.FC = () => {
                       title="Next page"
                     >
                       <ChevronRight size={16} />
-                    </button>
-                    <button
-                      onClick={() => handlePageChange(totalPages)}
-                      disabled={currentPage === totalPages}
-                      className="p-1.5 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                      title="Last page"
-                    >
-                      <ChevronRight size={16} />
-                      <ChevronRight size={16} className="-ml-3" />
                     </button>
                   </div>
                 </div>
