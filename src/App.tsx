@@ -20,6 +20,21 @@ const CredentialsPage = lazy(() => import('./pages/CredentialsPage').then(m => (
 const VariablesPage = lazy(() => import('./pages/VariablesPage').then(m => ({ default: m.VariablesPage })));
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
 
+// Monitoring Pages
+const ErrorLogPage = lazy(() => import('./pages/ErrorLogPage').then(m => ({ default: m.ErrorLogPage })));
+const PerformanceMetricsPage = lazy(() => import('./pages/PerformanceMetricsPage').then(m => ({ default: m.PerformanceMetricsPage })));
+const UsageReportsPage = lazy(() => import('./pages/UsageReportsPage').then(m => ({ default: m.UsageReportsPage })));
+const QueueMonitorPage = lazy(() => import('./pages/QueueMonitorPage').then(m => ({ default: m.QueueMonitorPage })));
+
+// Operations Pages
+const SchedulesPage = lazy(() => import('./pages/SchedulesPage').then(m => ({ default: m.SchedulesPage })));
+const WebhooksPage = lazy(() => import('./pages/WebhooksPage').then(m => ({ default: m.WebhooksPage })));
+const AlertsPage = lazy(() => import('./pages/AlertsPage').then(m => ({ default: m.AlertsPage })));
+
+// Admin Pages
+const ApiKeysPage = lazy(() => import('./pages/ApiKeysPage').then(m => ({ default: m.ApiKeysPage })));
+const BackupsPage = lazy(() => import('./pages/BackupsPage').then(m => ({ default: m.BackupsPage })));
+
 // Loading fallback for lazy-loaded routes
 const PageLoader: React.FC = () => (
   <div className="flex items-center justify-center min-h-[50vh]">
@@ -98,11 +113,29 @@ const App: React.FC = () => {
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route element={<MainLayout darkMode={darkMode} toggleTheme={toggleTheme} />}>
+            {/* Main */}
             <Route path="/" element={<DashboardPage onShowSettings={() => setShowSettings(true)} />} />
             <Route path="/workflows" element={<WorkflowsPage />} />
             <Route path="/executions" element={<ExecutionsPage />} />
             <Route path="/credentials" element={<CredentialsPage />} />
             <Route path="/variables" element={<VariablesPage />} />
+
+            {/* Monitoring */}
+            <Route path="/errors" element={<ErrorLogPage />} />
+            <Route path="/performance" element={<PerformanceMetricsPage />} />
+            <Route path="/reports" element={<UsageReportsPage />} />
+            <Route path="/queue" element={<QueueMonitorPage />} />
+
+            {/* Operations */}
+            <Route path="/schedules" element={<SchedulesPage />} />
+            <Route path="/webhooks" element={<WebhooksPage />} />
+            <Route path="/alerts" element={<AlertsPage />} />
+
+            {/* Admin */}
+            <Route path="/api-keys" element={<ApiKeysPage />} />
+            <Route path="/backups" element={<BackupsPage />} />
+
+            {/* Settings */}
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
         </Routes>

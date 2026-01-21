@@ -10,6 +10,14 @@ import {
   LogOut,
   X,
   Menu,
+  AlertCircle,
+  BarChart3,
+  FileText,
+  ListTodo,
+  Calendar,
+  Webhook,
+  Bell,
+  Archive,
 } from 'lucide-react';
 import { useSidebar } from '../../contexts/SidebarContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -22,12 +30,45 @@ interface NavItem {
   path: string;
 }
 
-const mainNavItems: NavItem[] = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
-  { icon: Workflow, label: 'Workflows', path: '/workflows' },
-  { icon: Activity, label: 'Executions', path: '/executions' },
-  { icon: Key, label: 'Credentials', path: '/credentials' },
-  { icon: Variable, label: 'Variables', path: '/variables' },
+interface NavSection {
+  title?: string;
+  items: NavItem[];
+}
+
+const navSections: NavSection[] = [
+  {
+    items: [
+      { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+      { icon: Workflow, label: 'Workflows', path: '/workflows' },
+      { icon: Activity, label: 'Executions', path: '/executions' },
+      { icon: Key, label: 'Credentials', path: '/credentials' },
+      { icon: Variable, label: 'Variables', path: '/variables' },
+    ],
+  },
+  {
+    title: 'Monitoring',
+    items: [
+      { icon: AlertCircle, label: 'Error Log', path: '/errors' },
+      { icon: BarChart3, label: 'Performance', path: '/performance' },
+      { icon: FileText, label: 'Usage Reports', path: '/reports' },
+      { icon: ListTodo, label: 'Queue', path: '/queue' },
+    ],
+  },
+  {
+    title: 'Operations',
+    items: [
+      { icon: Calendar, label: 'Schedules', path: '/schedules' },
+      { icon: Webhook, label: 'Webhooks', path: '/webhooks' },
+      { icon: Bell, label: 'Alerts', path: '/alerts' },
+    ],
+  },
+  {
+    title: 'Admin',
+    items: [
+      { icon: Key, label: 'API Keys', path: '/api-keys' },
+      { icon: Archive, label: 'Backups', path: '/backups' },
+    ],
+  },
 ];
 
 const bottomNavItems: NavItem[] = [
@@ -82,9 +123,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ darkMode, toggleTheme }) => {
       </div>
 
       {/* Main Navigation */}
-      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-        {mainNavItems.map(item => (
-          <NavItemComponent key={item.path} item={item} />
+      <nav className="flex-1 px-2 py-4 overflow-y-auto">
+        {navSections.map((section, sectionIndex) => (
+          <div key={sectionIndex} className={sectionIndex > 0 ? 'mt-4' : ''}>
+            {section.title && (
+              <div className="px-3 py-2">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
+                  {section.title}
+                </span>
+              </div>
+            )}
+            <div className="space-y-1">
+              {section.items.map(item => (
+                <NavItemComponent key={item.path} item={item} />
+              ))}
+            </div>
+          </div>
         ))}
       </nav>
 
