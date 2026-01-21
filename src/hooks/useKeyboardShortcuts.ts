@@ -7,11 +7,19 @@ interface ShortcutHandlers {
   onHelp?: () => void;
   onEscape?: () => void;
   onToggleTheme?: () => void;
+  onCommandPalette?: () => void;
 }
 
 export const useKeyboardShortcuts = (handlers: ShortcutHandlers) => {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
+      // Handle Cmd+K for command palette (works even in inputs)
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        handlers.onCommandPalette?.();
+        return;
+      }
+
       // Ignore if user is typing in an input
       const target = event.target as HTMLElement;
       if (
@@ -66,6 +74,7 @@ export const useKeyboardShortcuts = (handlers: ShortcutHandlers) => {
 };
 
 export const shortcuts = [
+  { key: '⌘K', description: 'Command palette' },
   { key: 'R', description: 'Refresh data' },
   { key: '/', description: 'Focus search' },
   { key: ',', description: 'Open settings' },

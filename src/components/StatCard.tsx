@@ -14,6 +14,7 @@ interface StatCardProps {
   icon: LucideIcon;
   color?: 'default' | 'success' | 'error' | 'warning';
   trend?: TrendData;
+  onClick?: () => void;
 }
 
 const dotColors = {
@@ -30,6 +31,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   icon: Icon,
   color = 'default',
   trend,
+  onClick,
 }) => {
   const displayValue = suffix === '%' ? value.toFixed(1) : value;
 
@@ -46,8 +48,11 @@ export const StatCard: React.FC<StatCardProps> = ({
     return suffix === '%' ? `${prefix}${trend.value.toFixed(1)}%` : `${prefix}${trend.value}`;
   };
 
-  return (
-    <div className="p-4 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
+  const baseClasses = "p-4 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-left w-full";
+  const interactiveClasses = onClick ? "cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors" : "";
+
+  const content = (
+    <>
       <div className="flex items-center justify-between mb-3">
         <Icon size={16} className="text-neutral-400" />
         {color !== 'default' && (
@@ -68,6 +73,20 @@ export const StatCard: React.FC<StatCardProps> = ({
           </span>
         )}
       </div>
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button onClick={onClick} className={`${baseClasses} ${interactiveClasses}`}>
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className={baseClasses}>
+      {content}
     </div>
   );
 };

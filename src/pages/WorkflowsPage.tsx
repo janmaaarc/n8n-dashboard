@@ -94,6 +94,8 @@ export const WorkflowsPage: React.FC = () => {
           isLoading={isLoading}
           onToggleActive={handleToggleWorkflow}
           onTrigger={handleTriggerWorkflow}
+          toggleLoadingId={toggleWorkflow.isPending ? toggleWorkflow.variables?.id : undefined}
+          triggerLoadingId={triggerWorkflow.isPending ? triggerWorkflow.variables : undefined}
           favorites={favorites}
           onToggleFavorite={toggleFavorite}
           searchInputRef={searchInputRef}

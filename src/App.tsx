@@ -5,7 +5,9 @@ import { MainLayout } from './components/layout';
 import { ToastContainer, useToast } from './components/Toast';
 import { SettingsModal } from './components/SettingsModal';
 import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
+import { CommandPalette } from './components/CommandPalette';
 import { LandingPage } from './components/LandingPage';
+import { useCommandPalette } from './hooks/useCommandPalette';
 import {
   DashboardPage,
   WorkflowsPage,
@@ -35,6 +37,9 @@ const App: React.FC = () => {
   const { settings, updateSettings, resetSettings } = useSettings();
   const toast = useToast();
   const navigate = useNavigate();
+  const commandPalette = useCommandPalette({
+    onRefresh: () => window.location.reload(),
+  });
 
   useEffect(() => {
     if (darkMode) {
@@ -49,7 +54,9 @@ const App: React.FC = () => {
   const toggleTheme = () => setDarkMode((prev) => !prev);
 
   const handleCloseModals = () => {
-    if (showSettings) {
+    if (commandPalette.isOpen) {
+      commandPalette.close();
+    } else if (showSettings) {
       setShowSettings(false);
     } else if (showShortcuts) {
       setShowShortcuts(false);
@@ -64,6 +71,7 @@ const App: React.FC = () => {
     onHelp: () => setShowShortcuts(true),
     onEscape: handleCloseModals,
     onToggleTheme: toggleTheme,
+    onCommandPalette: commandPalette.toggle,
   });
 
   // Show loading state while checking auth
@@ -110,6 +118,16 @@ const App: React.FC = () => {
 
       {/* Toast Notifications */}
       <ToastContainer toasts={toast.toasts} onDismiss={toast.dismissToast} />
+
+      {/* Command Palette */}
+      <CommandPalette
+        isOpen={commandPalette.isOpen}
+        onClose={commandPalette.close}
+        query={commandPalette.query}
+        onQueryChange={commandPalette.setQuery}
+        commands={commandPalette.commands}
+        onSelectCommand={commandPalette.executeCommand}
+      />
     </>
   );
 };

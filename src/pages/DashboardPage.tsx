@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Workflow, Play, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { PageHeader } from '../components/layout';
 import { StatCard } from '../components/StatCard';
@@ -24,6 +25,7 @@ interface DashboardPageProps {
 export const DashboardPage: React.FC<DashboardPageProps> = ({ onShowSettings }) => {
   const [selectedExecution, setSelectedExecution] = React.useState<Execution | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   const { isAuthenticated } = useAuth();
   const { settings, isConfigured } = useSettings();
@@ -151,12 +153,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onShowSettings }) 
           label="Workflows"
           value={stats.totalWorkflows}
           icon={Workflow}
+          onClick={() => navigate('/workflows')}
         />
         <StatCard
           label="Executions"
           value={stats.totalExecutions}
           icon={Play}
           trend={stats.trends.executions}
+          onClick={() => navigate('/executions')}
         />
         <StatCard
           label="Success Rate"
@@ -165,6 +169,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onShowSettings }) 
           icon={CheckCircle}
           color="success"
           trend={stats.trends.successRate}
+          onClick={() => navigate('/executions?status=success')}
         />
         <StatCard
           label="Errors"
@@ -172,12 +177,13 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onShowSettings }) 
           icon={AlertCircle}
           color={stats.recentErrors > 0 ? 'error' : 'default'}
           trend={stats.trends.errors}
+          onClick={() => navigate('/executions?status=error')}
         />
       </div>
 
       {/* Execution Chart */}
       <div className="mb-8">
-        <Section title="Execution History (7 days)">
+        <Section title="Execution History">
           <ErrorBoundary>
             <ExecutionChart executions={enrichedExecutions} isLoading={executionsLoading} />
           </ErrorBoundary>
@@ -195,6 +201,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onShowSettings }) 
                 isLoading={workflowsLoading}
                 onToggleActive={handleToggleWorkflow}
                 onTrigger={handleTriggerWorkflow}
+                toggleLoadingId={toggleWorkflow.isPending ? toggleWorkflow.variables?.id : undefined}
+                triggerLoadingId={triggerWorkflow.isPending ? triggerWorkflow.variables : undefined}
                 favorites={favorites}
                 onToggleFavorite={toggleFavorite}
                 searchInputRef={searchInputRef}

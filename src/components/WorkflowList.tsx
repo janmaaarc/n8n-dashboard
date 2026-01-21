@@ -17,6 +17,7 @@ import {
   MousePointer,
   Mail,
   Zap,
+  Loader2,
 } from 'lucide-react';
 import type { Workflow as WorkflowType, WorkflowNode } from '../types';
 import { getStoredSettings } from '../hooks/useSettings';
@@ -63,6 +64,8 @@ interface WorkflowListProps {
   isLoading?: boolean;
   onToggleActive?: (workflow: WorkflowType) => void;
   onTrigger?: (workflow: WorkflowType) => void;
+  toggleLoadingId?: string;
+  triggerLoadingId?: string;
   favorites: Set<string>;
   onToggleFavorite: (id: string) => void;
   searchInputRef?: React.RefObject<HTMLInputElement | null>;
@@ -83,6 +86,8 @@ export const WorkflowList: React.FC<WorkflowListProps> = ({
   isLoading,
   onToggleActive,
   onTrigger,
+  toggleLoadingId,
+  triggerLoadingId,
   favorites,
   onToggleFavorite,
   searchInputRef,
@@ -448,23 +453,35 @@ export const WorkflowList: React.FC<WorkflowListProps> = ({
                   {workflow.active && onTrigger && (
                     <button
                       onClick={() => onTrigger(workflow)}
-                      className="p-1.5 rounded text-blue-600 hover:bg-blue-50 dark:text-blue-500 dark:hover:bg-blue-500/10 transition-colors"
+                      disabled={triggerLoadingId === workflow.id}
+                      className="p-1.5 rounded text-blue-600 hover:bg-blue-50 dark:text-blue-500 dark:hover:bg-blue-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Run workflow"
                     >
-                      <PlayCircle size={14} />
+                      {triggerLoadingId === workflow.id ? (
+                        <Loader2 size={14} className="animate-spin" />
+                      ) : (
+                        <PlayCircle size={14} />
+                      )}
                     </button>
                   )}
 
                   <button
                     onClick={() => onToggleActive?.(workflow)}
-                    className={`p-1.5 rounded hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors ${
+                    disabled={toggleLoadingId === workflow.id}
+                    className={`p-1.5 rounded hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                       workflow.active
                         ? 'text-amber-600 dark:text-amber-500'
                         : 'text-emerald-600 dark:text-emerald-500'
                     }`}
                     title={workflow.active ? 'Deactivate' : 'Activate'}
                   >
-                    {workflow.active ? <Pause size={14} /> : <Play size={14} />}
+                    {toggleLoadingId === workflow.id ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : workflow.active ? (
+                      <Pause size={14} />
+                    ) : (
+                      <Play size={14} />
+                    )}
                   </button>
 
                   <a

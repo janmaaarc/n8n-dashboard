@@ -20,6 +20,7 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  Loader2,
 } from 'lucide-react';
 import type { Workflow as WorkflowType, Execution, WorkflowNode } from '../types';
 import { getStoredSettings } from '../hooks/useSettings';
@@ -86,6 +87,8 @@ interface WorkflowTableProps {
   isLoading?: boolean;
   onToggleActive?: (workflow: WorkflowType) => void;
   onTrigger?: (workflow: WorkflowType) => void;
+  toggleLoadingId?: string;
+  triggerLoadingId?: string;
   favorites: Set<string>;
   onToggleFavorite: (id: string) => void;
   searchInputRef?: React.RefObject<HTMLInputElement | null>;
@@ -108,6 +111,8 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
   isLoading,
   onToggleActive,
   onTrigger,
+  toggleLoadingId,
+  triggerLoadingId,
   favorites,
   onToggleFavorite,
   searchInputRef,
@@ -585,18 +590,30 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
                           {workflow.active && onTrigger && (
                             <button
                               onClick={() => onTrigger(workflow)}
-                              className="p-1.5 rounded text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-700 transition-colors"
+                              disabled={triggerLoadingId === workflow.id}
+                              className="p-1.5 rounded text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                               title="Run workflow"
                             >
-                              <PlayCircle size={14} />
+                              {triggerLoadingId === workflow.id ? (
+                                <Loader2 size={14} className="animate-spin" />
+                              ) : (
+                                <PlayCircle size={14} />
+                              )}
                             </button>
                           )}
                           <button
                             onClick={() => onToggleActive?.(workflow)}
-                            className="p-1.5 rounded text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-700 transition-colors"
+                            disabled={toggleLoadingId === workflow.id}
+                            className="p-1.5 rounded text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             title={workflow.active ? 'Deactivate' : 'Activate'}
                           >
-                            {workflow.active ? <Pause size={14} /> : <Play size={14} />}
+                            {toggleLoadingId === workflow.id ? (
+                              <Loader2 size={14} className="animate-spin" />
+                            ) : workflow.active ? (
+                              <Pause size={14} />
+                            ) : (
+                              <Play size={14} />
+                            )}
                           </button>
                           <a
                             href={`${getN8nUrl()}/workflow/${workflow.id}`}
