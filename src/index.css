@@ -7,24 +7,28 @@
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'SF Mono', 'JetBrains Mono', monospace;
 
-  /* Linear-inspired neutral palette */
-  --color-neutral-50: #f9fafb;
-  --color-neutral-100: #f3f4f6;
-  --color-neutral-200: #e5e7eb;
-  --color-neutral-300: #d1d5db;
-  --color-neutral-400: #9ca3af;
-  --color-neutral-500: #6b7280;
-  --color-neutral-600: #4b5563;
-  --color-neutral-700: #374151;
-  --color-neutral-800: #1f2937;
-  --color-neutral-900: #111827;
-  --color-neutral-950: #0d1117;
+  /* Monochrome neutral palette */
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-200: #e5e5e5;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-400: #a3a3a3;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #404040;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
+  --color-neutral-950: #0a0a0a;
 }
 
-/* Global focus visible styles */
+/* Global focus visible styles - monochrome */
 *:focus-visible {
-  outline: 2px solid #6366f1;
+  outline: 2px solid #171717;
   outline-offset: 1px;
+}
+
+.dark *:focus-visible {
+  outline-color: #fafafa;
 }
 
 *:focus:not(:focus-visible) {
@@ -53,20 +57,20 @@ html.dark {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(107, 114, 128, 0.3);
+  background: rgba(115, 115, 115, 0.3);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(107, 114, 128, 0.5);
+  background: rgba(115, 115, 115, 0.5);
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(107, 114, 128, 0.2);
+  background: rgba(115, 115, 115, 0.2);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(107, 114, 128, 0.4);
+  background: rgba(115, 115, 115, 0.4);
 }
 
 /* Hide scrollbar utility */
@@ -79,170 +83,7 @@ html.dark {
   scrollbar-width: none;
 }
 
-/* Touch ripple animation */
-@keyframes ripple {
-  0% {
-    transform: scale(0);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0;
-  }
-}
-
-.animate-ripple {
-  animation: ripple 0.6s ease-out forwards;
-}
-
-/* Touch feedback utilities */
-@keyframes press-in {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(0.97);
-  }
-}
-
-@keyframes press-out {
-  0% {
-    transform: scale(0.97);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* Pulse animation for buttons */
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
-  }
-}
-
-/* Shimmer effect for loading states */
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-.animate-shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-/* Bounce animation for icons */
-@keyframes bounce-subtle {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
-  }
-}
-
-.animate-bounce-subtle {
-  animation: bounce-subtle 0.5s ease-in-out;
-}
-
-/* Slide in animations */
-@keyframes slide-up {
-  0% {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-down {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-in-right {
-  0% {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slide-in-left {
-  0% {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out forwards;
-}
-
-.animate-slide-down {
-  animation: slide-down 0.3s ease-out forwards;
-}
-
-.animate-slide-in-right {
-  animation: slide-in-right 0.3s ease-out forwards;
-}
-
-.animate-slide-in-left {
-  animation: slide-in-left 0.3s ease-out forwards;
-}
-
-/* Zoom in animation */
-@keyframes zoom-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.animate-zoom-in {
-  animation: zoom-in 0.2s ease-out forwards;
-}
-
-/* Fade in animation */
+/* Minimal fade animation for modals */
 @keyframes fade-in {
   0% {
     opacity: 0;
@@ -253,21 +94,7 @@ html.dark {
 }
 
 .animate-fade-in {
-  animation: fade-in 0.2s ease-out forwards;
-}
-
-/* Gradient text animation */
-@keyframes gradient {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-.animate-gradient {
-  animation: gradient 3s ease infinite;
+  animation: fade-in 0.15s ease-out forwards;
 }
 
 /* Touch-friendly tap highlight */
@@ -276,53 +103,13 @@ html.dark {
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Increase touch targets on mobile */
   button,
   [role="button"],
   a {
     min-height: 44px;
     min-width: 44px;
   }
-
-  /* Add active states for touch devices */
-  .touch-active:active {
-    transform: scale(0.97);
-    opacity: 0.9;
-  }
 }
-
-/* Haptic feedback simulation through visual response */
-.haptic-press {
-  transition: transform 0.1s ease-out;
-}
-
-.haptic-press:active {
-  transform: scale(0.97);
-}
-
-/* Swipe hint animation */
-@keyframes swipe-hint {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(10px);
-  }
-}
-
-.animate-swipe-hint {
-  animation: swipe-hint 1s ease-in-out 2;
-}
-
-/* Stagger animation delays for lists */
-.stagger-1 { animation-delay: 0.05s; }
-.stagger-2 { animation-delay: 0.1s; }
-.stagger-3 { animation-delay: 0.15s; }
-.stagger-4 { animation-delay: 0.2s; }
-.stagger-5 { animation-delay: 0.25s; }
-.stagger-6 { animation-delay: 0.3s; }
-.stagger-7 { animation-delay: 0.35s; }
-.stagger-8 { animation-delay: 0.4s; }
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {

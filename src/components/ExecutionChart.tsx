@@ -74,52 +74,44 @@ export const ExecutionChart: React.FC<ExecutionChartProps> = ({ executions, isLo
     <div className="h-40">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-          <defs>
-            <linearGradient id="successGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="errorGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-            </linearGradient>
-          </defs>
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 10, fill: '#9ca3af' }}
+            tick={{ fontSize: 10, fill: '#a3a3a3' }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            tick={{ fontSize: 10, fill: '#9ca3af' }}
+            tick={{ fontSize: 10, fill: '#a3a3a3' }}
             axisLine={false}
             tickLine={false}
             allowDecimals={false}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(17, 24, 39, 0.9)',
-              border: 'none',
-              borderRadius: '8px',
+              backgroundColor: '#171717',
+              border: '1px solid #404040',
+              borderRadius: '6px',
               fontSize: '12px',
-              color: '#fff',
+              color: '#fafafa',
             }}
-            labelStyle={{ color: '#9ca3af' }}
+            labelStyle={{ color: '#a3a3a3' }}
           />
           <Area
             type="monotone"
             dataKey="success"
-            stroke="#10b981"
-            strokeWidth={2}
-            fill="url(#successGradient)"
+            stroke="#525252"
+            strokeWidth={1.5}
+            fill="#e5e5e5"
+            fillOpacity={0.5}
             name="Success"
           />
           <Area
             type="monotone"
             dataKey="error"
-            stroke="#ef4444"
-            strokeWidth={2}
-            fill="url(#errorGradient)"
+            stroke="#a3a3a3"
+            strokeWidth={1.5}
+            fill="#f5f5f5"
+            fillOpacity={0.3}
             name="Errors"
           />
         </AreaChart>

@@ -79,11 +79,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ darkMode, toggleTheme }) => {
     <>
       {/* Logo */}
       <div className={`flex items-center gap-2 px-3 py-4 ${isCollapsed && !isMobileOpen ? 'justify-center' : ''}`}>
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-          <Workflow size={18} className="text-white" />
+        <div className="w-8 h-8 rounded-lg bg-neutral-900 dark:bg-white flex items-center justify-center flex-shrink-0">
+          <Workflow size={18} className="text-white dark:text-neutral-900" />
         </div>
         {(!isCollapsed || isMobileOpen) && (
-          <span className="text-sm font-semibold text-neutral-900 dark:text-white">n8n Dashboard</span>
+          <span className="text-sm font-semibold text-neutral-900 dark:text-white">n8n Pulse</span>
         )}
       </div>
 
@@ -132,7 +132,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ darkMode, toggleTheme }) => {
       {/* Collapse Toggle (Desktop) */}
       <button
         onClick={toggleCollapse}
-        className="hidden md:flex absolute -right-3 top-6 w-6 h-6 items-center justify-center rounded-full border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 shadow-sm"
+        className="hidden md:flex absolute -right-3 top-6 w-6 h-6 items-center justify-center rounded-full border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
       >
         {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
       </button>

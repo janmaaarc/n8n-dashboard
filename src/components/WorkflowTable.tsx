@@ -156,9 +156,9 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
       return <ArrowUpDown size={14} className="text-neutral-400" />;
     }
     return sortDirection === 'asc' ? (
-      <ArrowUp size={14} className="text-indigo-500" />
+      <ArrowUp size={14} className="text-neutral-900 dark:text-white" />
     ) : (
-      <ArrowDown size={14} className="text-indigo-500" />
+      <ArrowDown size={14} className="text-neutral-900 dark:text-white" />
     );
   };
 
@@ -296,13 +296,13 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
             placeholder="Search workflows..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="w-full pl-9 pr-3 py-2 text-sm rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-white focus:border-transparent"
           />
         </div>
         <select
           value={filterBy}
           onChange={(e) => setFilterBy(e.target.value as FilterOption)}
-          className="px-3 py-2 text-sm rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="px-3 py-2 text-sm rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-white"
         >
           <option value="all">All</option>
           <option value="active">Active</option>
@@ -320,7 +320,7 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
               onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
               className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full transition-colors ${
                 selectedTag === tag
-                  ? 'bg-indigo-500 text-white'
+                  ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
                   : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'
               }`}
             >
@@ -341,25 +341,25 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
 
       {/* Bulk Actions */}
       {selectedIds.size > 0 && (
-        <div className="flex items-center gap-2 p-2 rounded-md bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20">
-          <span className="text-sm text-indigo-700 dark:text-indigo-400">
+        <div className="flex items-center gap-2 p-2 rounded-md bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700">
+          <span className="text-sm text-neutral-700 dark:text-neutral-300">
             {selectedIds.size} selected
           </span>
           <button
             onClick={() => handleBulkAction('activate')}
-            className="px-2 py-1 text-xs rounded bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-500/30"
+            className="px-2 py-1 text-xs rounded bg-neutral-200 text-neutral-700 hover:bg-neutral-300 dark:bg-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-600"
           >
             Activate
           </button>
           <button
             onClick={() => handleBulkAction('deactivate')}
-            className="px-2 py-1 text-xs rounded bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-500/20 dark:text-amber-400 dark:hover:bg-amber-500/30"
+            className="px-2 py-1 text-xs rounded bg-neutral-200 text-neutral-700 hover:bg-neutral-300 dark:bg-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-600"
           >
             Deactivate
           </button>
           <button
             onClick={() => setSelectedIds(new Set())}
-            className="ml-auto text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="ml-auto text-xs text-neutral-600 dark:text-neutral-400 hover:underline"
           >
             Clear
           </button>
@@ -386,8 +386,8 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
                       onClick={toggleSelectAll}
                       className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
                         selectedIds.size === paginatedWorkflows.length && paginatedWorkflows.length > 0
-                          ? 'bg-indigo-500 border-indigo-500 text-white'
-                          : 'border-neutral-300 dark:border-neutral-600 hover:border-indigo-500'
+                          ? 'bg-neutral-900 border-neutral-900 text-white dark:bg-white dark:border-white dark:text-neutral-900'
+                          : 'border-neutral-300 dark:border-neutral-600 hover:border-neutral-900 dark:hover:border-white'
                       }`}
                     >
                       {selectedIds.size === paginatedWorkflows.length && paginatedWorkflows.length > 0 && (
@@ -487,8 +487,8 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
                           onClick={() => toggleSelect(workflow.id)}
                           className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
                             selectedIds.has(workflow.id)
-                              ? 'bg-indigo-500 border-indigo-500 text-white'
-                              : 'border-neutral-300 dark:border-neutral-600 hover:border-indigo-500'
+                              ? 'bg-neutral-900 border-neutral-900 text-white dark:bg-white dark:border-white dark:text-neutral-900'
+                              : 'border-neutral-300 dark:border-neutral-600 hover:border-neutral-900 dark:hover:border-white'
                           }`}
                         >
                           {selectedIds.has(workflow.id) && <Check size={12} />}
@@ -525,16 +525,10 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
 
                       {/* Status */}
                       <td className="px-3 py-3">
-                        <span
-                          className={`inline-flex items-center gap-1.5 text-xs px-2 py-0.5 rounded ${
-                            workflow.active
-                              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
-                              : 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400'
-                          }`}
-                        >
+                        <span className="inline-flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400">
                           <span
                             className={`w-1.5 h-1.5 rounded-full ${
-                              workflow.active ? 'bg-emerald-500' : 'bg-neutral-400'
+                              workflow.active ? 'bg-green-500' : 'bg-neutral-400'
                             }`}
                           />
                           {workflow.active ? 'Active' : 'Inactive'}
@@ -548,7 +542,7 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
                             <span
                               className={`w-1.5 h-1.5 rounded-full ${
                                 stats.lastExecution.status === 'success'
-                                  ? 'bg-emerald-500'
+                                  ? 'bg-green-500'
                                   : stats.lastExecution.status === 'error'
                                   ? 'bg-red-500'
                                   : 'bg-amber-500'
@@ -572,17 +566,7 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
 
                       {/* Success Rate */}
                       <td className="px-3 py-3 text-right">
-                        <span
-                          className={`text-sm tabular-nums ${
-                            stats.totalExecutions === 0
-                              ? 'text-neutral-400'
-                              : stats.successRate >= 90
-                              ? 'text-emerald-600 dark:text-emerald-500'
-                              : stats.successRate >= 70
-                              ? 'text-amber-600 dark:text-amber-500'
-                              : 'text-red-600 dark:text-red-500'
-                          }`}
-                        >
+                        <span className="text-sm tabular-nums text-neutral-700 dark:text-neutral-300">
                           {stats.totalExecutions > 0 ? `${stats.successRate.toFixed(0)}%` : '-'}
                         </span>
                       </td>
@@ -601,7 +585,7 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
                           {workflow.active && onTrigger && (
                             <button
                               onClick={() => onTrigger(workflow)}
-                              className="p-1.5 rounded text-blue-600 hover:bg-blue-50 dark:text-blue-500 dark:hover:bg-blue-500/10 transition-colors"
+                              className="p-1.5 rounded text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-700 transition-colors"
                               title="Run workflow"
                             >
                               <PlayCircle size={14} />
@@ -609,11 +593,7 @@ export const WorkflowTable: React.FC<WorkflowTableProps> = ({
                           )}
                           <button
                             onClick={() => onToggleActive?.(workflow)}
-                            className={`p-1.5 rounded hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors ${
-                              workflow.active
-                                ? 'text-amber-600 dark:text-amber-500'
-                                : 'text-emerald-600 dark:text-emerald-500'
-                            }`}
+                            className="p-1.5 rounded text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-700 transition-colors"
                             title={workflow.active ? 'Deactivate' : 'Activate'}
                           >
                             {workflow.active ? <Pause size={14} /> : <Play size={14} />}

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { CheckCircle, XCircle, Clock, Loader2, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import { Clock, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
 import type { Execution } from '../types';
 import { formatDistanceToNow } from '../utils/date';
 import { exportExecutionsToCSV, exportExecutionsToJSON } from '../utils/export';
@@ -16,23 +16,19 @@ interface ExecutionFeedProps {
 
 const statusConfig = {
   success: {
-    icon: CheckCircle,
-    color: 'text-emerald-600 dark:text-emerald-500',
+    dotClass: 'bg-green-500',
     label: 'Success',
   },
   error: {
-    icon: XCircle,
-    color: 'text-red-600 dark:text-red-500',
+    dotClass: 'bg-red-500',
     label: 'Failed',
   },
   running: {
-    icon: Loader2,
-    color: 'text-blue-600 dark:text-blue-500',
+    dotClass: 'bg-blue-500 animate-pulse',
     label: 'Running',
   },
   waiting: {
-    icon: Clock,
-    color: 'text-amber-600 dark:text-amber-500',
+    dotClass: 'bg-amber-500',
     label: 'Waiting',
   },
 };
@@ -110,7 +106,7 @@ export const ExecutionFeed: React.FC<ExecutionFeedProps> = ({
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-            className="flex-1 px-2 py-1 text-xs rounded border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="flex-1 px-2 py-1 text-xs rounded border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-white"
           >
             <option value="all">All statuses</option>
             <option value="success">Success</option>
@@ -146,7 +142,6 @@ export const ExecutionFeed: React.FC<ExecutionFeedProps> = ({
         <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 divide-y divide-neutral-200 dark:divide-neutral-800">
           {paginatedExecutions.map((exec) => {
             const status = statusConfig[exec.status] || statusConfig.waiting;
-            const Icon = status.icon;
 
             return (
               <button
@@ -156,10 +151,7 @@ export const ExecutionFeed: React.FC<ExecutionFeedProps> = ({
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <Icon
-                      size={14}
-                      className={`flex-shrink-0 ${status.color} ${exec.status === 'running' ? 'animate-spin' : ''}`}
-                    />
+                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${status.dotClass}`} />
                     <span className="text-sm text-neutral-900 dark:text-white truncate">
                       {exec.workflowName || `Workflow ${exec.workflowId}`}
                     </span>

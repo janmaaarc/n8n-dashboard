@@ -6,10 +6,7 @@ import {
   ChevronRight,
   ExternalLink,
   Eye,
-  CheckCircle,
-  XCircle,
   Clock,
-  Loader2,
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
@@ -84,37 +81,27 @@ const getStatusConfig = (status: string) => {
   switch (status) {
     case 'success':
       return {
-        icon: <CheckCircle size={14} />,
         label: 'Success',
-        className: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
-        dotClass: 'bg-emerald-500',
+        dotClass: 'bg-green-500',
       };
     case 'error':
       return {
-        icon: <XCircle size={14} />,
         label: 'Error',
-        className: 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400',
         dotClass: 'bg-red-500',
       };
     case 'running':
       return {
-        icon: <Loader2 size={14} className="animate-spin" />,
         label: 'Running',
-        className: 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
         dotClass: 'bg-blue-500',
       };
     case 'waiting':
       return {
-        icon: <Clock size={14} />,
         label: 'Waiting',
-        className: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
         dotClass: 'bg-amber-500',
       };
     default:
       return {
-        icon: <Activity size={14} />,
         label: status,
-        className: 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400',
         dotClass: 'bg-neutral-500',
       };
   }
@@ -162,9 +149,9 @@ export const ExecutionTable: React.FC<ExecutionTableProps> = ({
       return <ArrowUpDown size={14} className="text-neutral-400" />;
     }
     return sortDirection === 'asc' ? (
-      <ArrowUp size={14} className="text-indigo-500" />
+      <ArrowUp size={14} className="text-neutral-900 dark:text-white" />
     ) : (
-      <ArrowDown size={14} className="text-indigo-500" />
+      <ArrowDown size={14} className="text-neutral-900 dark:text-white" />
     );
   };
 
@@ -263,13 +250,13 @@ export const ExecutionTable: React.FC<ExecutionTableProps> = ({
             placeholder="Search by workflow name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="w-full pl-9 pr-3 py-2 text-sm rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-white focus:border-transparent"
           />
         </div>
         <select
           value={filterBy}
           onChange={(e) => setFilterBy(e.target.value as FilterOption)}
-          className="px-3 py-2 text-sm rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="px-3 py-2 text-sm rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-white"
         >
           <option value="all">All Status</option>
           <option value="success">Success</option>
@@ -362,10 +349,8 @@ export const ExecutionTable: React.FC<ExecutionTableProps> = ({
 
                       {/* Status */}
                       <td className="px-3 py-3">
-                        <span
-                          className={`inline-flex items-center gap-1.5 text-xs px-2 py-0.5 rounded ${statusConfig.className}`}
-                        >
-                          {statusConfig.icon}
+                        <span className="inline-flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400">
+                          <span className={`w-1.5 h-1.5 rounded-full ${statusConfig.dotClass}`} />
                           {statusConfig.label}
                         </span>
                       </td>

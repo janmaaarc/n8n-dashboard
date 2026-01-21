@@ -1,10 +1,10 @@
 import React from 'react';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface TrendData {
   value: number;
-  isPositiveGood?: boolean; // For errors, decrease is good
+  isPositiveGood?: boolean;
 }
 
 interface StatCardProps {
@@ -16,18 +16,11 @@ interface StatCardProps {
   trend?: TrendData;
 }
 
-const colorClasses = {
-  default: 'text-neutral-500 dark:text-neutral-400',
-  success: 'text-emerald-600 dark:text-emerald-500',
-  error: 'text-red-600 dark:text-red-500',
-  warning: 'text-amber-600 dark:text-amber-500',
-};
-
-const iconBgClasses = {
-  default: 'bg-neutral-100 dark:bg-neutral-800',
-  success: 'bg-emerald-50 dark:bg-emerald-500/10',
-  error: 'bg-red-50 dark:bg-red-500/10',
-  warning: 'bg-amber-50 dark:bg-amber-500/10',
+const dotColors = {
+  default: 'bg-neutral-400',
+  success: 'bg-green-500',
+  error: 'bg-red-500',
+  warning: 'bg-amber-500',
 };
 
 export const StatCard: React.FC<StatCardProps> = ({
@@ -41,12 +34,10 @@ export const StatCard: React.FC<StatCardProps> = ({
   const displayValue = suffix === '%' ? value.toFixed(1) : value;
 
   const getTrendColor = () => {
-    if (!trend || trend.value === 0) return 'text-neutral-400 dark:text-neutral-500';
+    if (!trend || trend.value === 0) return 'text-neutral-400';
     const isPositive = trend.value > 0;
     const isGood = trend.isPositiveGood !== false ? isPositive : !isPositive;
-    return isGood
-      ? 'text-emerald-600 dark:text-emerald-500'
-      : 'text-red-600 dark:text-red-500';
+    return isGood ? 'text-neutral-600 dark:text-neutral-300' : 'text-neutral-500';
   };
 
   const formatTrend = () => {
@@ -56,25 +47,26 @@ export const StatCard: React.FC<StatCardProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-3 p-4 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
-      <div className={`p-2 rounded-md ${iconBgClasses[color]}`}>
-        <Icon size={18} className={colorClasses[color]} />
+    <div className="p-4 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
+      <div className="flex items-center justify-between mb-3">
+        <Icon size={16} className="text-neutral-400" />
+        {color !== 'default' && (
+          <span className={`w-2 h-2 rounded-full ${dotColors[color]}`} />
+        )}
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-2xl font-semibold text-neutral-900 dark:text-white tabular-nums">
-          {displayValue}{suffix}
+      <p className="text-3xl font-semibold text-neutral-900 dark:text-white tabular-nums tracking-tight">
+        {displayValue}{suffix}
+      </p>
+      <div className="flex items-center gap-2 mt-1">
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          {label}
         </p>
-        <div className="flex items-center gap-1.5">
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            {label}
-          </p>
-          {trend && trend.value !== 0 && (
-            <span className={`flex items-center gap-0.5 text-xs font-medium ${getTrendColor()}`}>
-              {trend.value > 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-              {formatTrend()}
-            </span>
-          )}
-        </div>
+        {trend && trend.value !== 0 && (
+          <span className={`flex items-center gap-0.5 text-xs ${getTrendColor()}`}>
+            {trend.value > 0 ? <ArrowUp size={10} /> : <ArrowDown size={10} />}
+            {formatTrend()}
+          </span>
+        )}
       </div>
     </div>
   );
