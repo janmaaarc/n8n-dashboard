@@ -13,7 +13,8 @@ export const useWorkflows = (options?: RefreshOptions) => {
   return useQuery({
     queryKey: ['workflows'],
     queryFn: async () => {
-      const response = await n8nApi.getWorkflows();
+      // Use getAllWorkflows to fetch all workflows with pagination
+      const response = await n8nApi.getAllWorkflows();
       return response.data;
     },
     refetchInterval: autoRefresh ? refreshInterval * 1000 : false,

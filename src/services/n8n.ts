@@ -38,8 +38,12 @@ const getHeaders = async (): Promise<HeadersInit> => {
 };
 
 export const n8nApi = {
-  async getWorkflows(): Promise<{ data: Workflow[] }> {
-    const res = await fetch(`${getBaseUrl()}/api/v1/workflows`, {
+  async getWorkflows(params?: { limit?: number }): Promise<{ data: Workflow[] }> {
+    const searchParams = new URLSearchParams();
+    // Default to 250 to fetch more workflows, n8n's default is often 10-100
+    searchParams.set('limit', (params?.limit ?? 250).toString());
+
+    const res = await fetch(`${getBaseUrl()}/api/v1/workflows?${searchParams.toString()}`, {
       headers: await getHeaders(),
     });
 
@@ -48,6 +52,38 @@ export const n8nApi = {
     }
 
     return res.json();
+  },
+
+  // Fetch all workflows using cursor-based pagination
+  async getAllWorkflows(): Promise<{ data: Workflow[] }> {
+    const allWorkflows: Workflow[] = [];
+    let cursor: string | undefined;
+    const limit = 250;
+
+    do {
+      const searchParams = new URLSearchParams();
+      searchParams.set('limit', limit.toString());
+      if (cursor) {
+        searchParams.set('cursor', cursor);
+      }
+
+      const res = await fetch(`${getBaseUrl()}/api/v1/workflows?${searchParams.toString()}`, {
+        headers: await getHeaders(),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Failed to fetch workflows: ${res.statusText}`);
+      }
+
+      const response = await res.json();
+      const workflows = response.data || [];
+      allWorkflows.push(...workflows);
+
+      // n8n returns nextCursor if there are more results
+      cursor = response.nextCursor;
+    } while (cursor);
+
+    return { data: allWorkflows };
   },
 
   async getWorkflow(id: string): Promise<Workflow> {
@@ -68,7 +104,8 @@ export const n8nApi = {
     workflowId?: string;
   }): Promise<{ data: Execution[] }> {
     const searchParams = new URLSearchParams();
-    if (params?.limit) searchParams.set('limit', params.limit.toString());
+    // Default to 250 if no limit specified
+    searchParams.set('limit', (params?.limit ?? 250).toString());
     if (params?.status) searchParams.set('status', params.status);
     if (params?.workflowId) searchParams.set('workflowId', params.workflowId);
 
@@ -82,6 +119,43 @@ export const n8nApi = {
     }
 
     return res.json();
+  },
+
+  // Fetch all executions using cursor-based pagination
+  async getAllExecutions(params?: {
+    status?: string;
+    workflowId?: string;
+  }): Promise<{ data: Execution[] }> {
+    const allExecutions: Execution[] = [];
+    let cursor: string | undefined;
+    const limit = 250;
+
+    do {
+      const searchParams = new URLSearchParams();
+      searchParams.set('limit', limit.toString());
+      if (params?.status) searchParams.set('status', params.status);
+      if (params?.workflowId) searchParams.set('workflowId', params.workflowId);
+      if (cursor) {
+        searchParams.set('cursor', cursor);
+      }
+
+      const res = await fetch(`${getBaseUrl()}/api/v1/executions?${searchParams.toString()}`, {
+        headers: await getHeaders(),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Failed to fetch executions: ${res.statusText}`);
+      }
+
+      const response = await res.json();
+      const executions = response.data || [];
+      allExecutions.push(...executions);
+
+      // n8n returns nextCursor if there are more results
+      cursor = response.nextCursor;
+    } while (cursor);
+
+    return { data: allExecutions };
   },
 
   async getExecution(id: string): Promise<Execution> {
@@ -149,7 +223,10 @@ export const n8nApi = {
 
   // Credentials (note: n8n API only returns metadata, not actual secrets)
   async getCredentials(): Promise<{ data: Credential[] }> {
-    const res = await fetch(`${getBaseUrl()}/api/v1/credentials`, {
+    const searchParams = new URLSearchParams();
+    searchParams.set('limit', '250');
+
+    const res = await fetch(`${getBaseUrl()}/api/v1/credentials?${searchParams.toString()}`, {
       headers: await getHeaders(),
     });
 
@@ -162,7 +239,10 @@ export const n8nApi = {
 
   // Variables (requires n8n 1.x+)
   async getVariables(): Promise<{ data: Variable[] }> {
-    const res = await fetch(`${getBaseUrl()}/api/v1/variables`, {
+    const searchParams = new URLSearchParams();
+    searchParams.set('limit', '250');
+
+    const res = await fetch(`${getBaseUrl()}/api/v1/variables?${searchParams.toString()}`, {
       headers: await getHeaders(),
     });
 

@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { RefreshCw, Download, Upload, Archive, Check, AlertCircle, FileJson, Clock } from 'lucide-react';
+import React, { useState, useRef, useMemo } from 'react';
+import { RefreshCw, Download, Upload, Archive, Check, AlertCircle, FileJson, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { PageHeader } from '../components/layout';
 import { ErrorBoundary } from '../components/ErrorBoundary';
@@ -10,9 +10,13 @@ import { isSupabaseConfigured } from '../lib/supabase';
 import { useToast } from '../components/Toast';
 import type { Workflow } from '../types';
 
+const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50, 100];
+
 export const BackupsPage: React.FC = () => {
   const [selectedWorkflows, setSelectedWorkflows] = useState<Set<string>>(new Set());
   const [isExporting, setIsExporting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { isAuthenticated } = useAuth();
   const { settings } = useSettings();
@@ -28,6 +32,27 @@ export const BackupsPage: React.FC = () => {
   const { data: workflows, isLoading, refetch } = useWorkflows(
     shouldFetchData ? refreshOptions : { autoRefresh: false }
   );
+
+  // Pagination calculations
+  const totalItems = workflows?.length || 0;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const paginatedWorkflows = useMemo(() => {
+    if (!workflows) return [];
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return workflows.slice(startIndex, endIndex);
+  }, [workflows, currentPage, itemsPerPage]);
+
+  // Reset to page 1 when items per page changes or when workflows change
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+  };
+
+  const goToPage = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
 
   const handleRefresh = () => {
     refetch();
@@ -46,6 +71,23 @@ export const BackupsPage: React.FC = () => {
     });
   };
 
+  const selectAllOnPage = () => {
+    const pageIds = paginatedWorkflows.map(w => w.id);
+    const allPageSelected = pageIds.every(id => selectedWorkflows.has(id));
+
+    if (allPageSelected) {
+      // Deselect all on current page
+      setSelectedWorkflows(prev => {
+        const newSet = new Set(prev);
+        pageIds.forEach(id => newSet.delete(id));
+        return newSet;
+      });
+    } else {
+      // Select all on current page
+      setSelectedWorkflows(prev => new Set([...prev, ...pageIds]));
+    }
+  };
+
   const selectAllWorkflows = () => {
     if (!workflows) return;
     if (selectedWorkflows.size === workflows.length) {
@@ -54,6 +96,9 @@ export const BackupsPage: React.FC = () => {
       setSelectedWorkflows(new Set(workflows.map(w => w.id)));
     }
   };
+
+  const allOnPageSelected = paginatedWorkflows.length > 0 &&
+    paginatedWorkflows.every(w => selectedWorkflows.has(w.id));
 
   const exportWorkflow = (workflow: Workflow) => {
     const data = JSON.stringify(workflow, null, 2);
@@ -294,16 +339,30 @@ export const BackupsPage: React.FC = () => {
             {/* Workflows Table */}
             <div className="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 overflow-hidden">
               <div className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
-                <h3 className="text-sm font-medium text-neutral-900 dark:text-white">Workflows</h3>
-                <button
-                  onClick={selectAllWorkflows}
-                  className="text-xs text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
-                >
-                  {selectedWorkflows.size === workflows.length ? 'Deselect all' : 'Select all'}
-                </button>
+                <h3 className="text-sm font-medium text-neutral-900 dark:text-white">
+                  Workflows
+                  <span className="ml-2 text-xs font-normal text-neutral-500 dark:text-neutral-400">
+                    {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}
+                  </span>
+                </h3>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={selectAllOnPage}
+                    className="text-xs text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+                  >
+                    {allOnPageSelected ? 'Deselect page' : 'Select page'}
+                  </button>
+                  <span className="text-neutral-300 dark:text-neutral-700">|</span>
+                  <button
+                    onClick={selectAllWorkflows}
+                    className="text-xs text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+                  >
+                    {selectedWorkflows.size === workflows.length ? 'Deselect all' : 'Select all'}
+                  </button>
+                </div>
               </div>
               <div className="divide-y divide-neutral-200 dark:divide-neutral-800">
-                {workflows.map((workflow) => (
+                {paginatedWorkflows.map((workflow) => (
                   <div
                     key={workflow.id}
                     className="px-4 py-3 flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
@@ -341,6 +400,86 @@ export const BackupsPage: React.FC = () => {
                   </div>
                 ))}
               </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="px-4 py-3 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-neutral-500 dark:text-neutral-400">Rows per page:</span>
+                    <select
+                      value={itemsPerPage}
+                      onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                      className="text-xs bg-transparent border border-neutral-200 dark:border-neutral-700 rounded px-2 py-1 text-neutral-700 dark:text-neutral-300 focus:outline-none focus:ring-1 focus:ring-neutral-400"
+                    >
+                      {ITEMS_PER_PAGE_OPTIONS.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => goToPage(1)}
+                      disabled={currentPage === 1}
+                      className="px-2 py-1 text-xs text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      First
+                    </button>
+                    <button
+                      onClick={() => goToPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="p-1 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <ChevronLeft size={16} />
+                    </button>
+
+                    <div className="flex items-center gap-1 px-2">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum: number;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => goToPage(pageNum)}
+                            className={`w-7 h-7 text-xs rounded transition-colors ${
+                              currentPage === pageNum
+                                ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
+                                : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <button
+                      onClick={() => goToPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="p-1 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <ChevronRight size={16} />
+                    </button>
+                    <button
+                      onClick={() => goToPage(totalPages)}
+                      disabled={currentPage === totalPages}
+                      className="px-2 py-1 text-xs text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Last
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
