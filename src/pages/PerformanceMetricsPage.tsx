@@ -14,7 +14,7 @@ import {
 import { format, subDays, startOfDay, differenceInMilliseconds } from 'date-fns';
 import { PageHeader } from '../components/layout';
 import { ErrorBoundary } from '../components/ErrorBoundary';
-import { useExecutions, useWorkflows } from '../hooks/useN8n';
+import { useAllExecutions, useWorkflows } from '../hooks/useN8n';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../contexts/AuthContext';
 import { isSupabaseConfigured } from '../lib/supabase';
@@ -61,8 +61,8 @@ export const PerformanceMetricsPage: React.FC = () => {
 
   const shouldFetchData = !isSupabaseConfigured() || isAuthenticated;
 
-  const { data: executions, isLoading, refetch } = useExecutions(
-    { limit: 1000 },
+  const { data: executions, isLoading, refetch } = useAllExecutions(
+    {},
     shouldFetchData ? refreshOptions : { autoRefresh: false }
   );
 

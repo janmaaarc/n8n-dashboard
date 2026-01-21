@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { PageHeader } from '../components/layout';
 import { ErrorBoundary } from '../components/ErrorBoundary';
-import { useExecutions, useWorkflows, useTriggerWorkflow } from '../hooks/useN8n';
+import { useAllExecutions, useWorkflows, useTriggerWorkflow } from '../hooks/useN8n';
 import { useSettings } from '../hooks/useSettings';
 import { useAuth } from '../contexts/AuthContext';
 import { isSupabaseConfigured } from '../lib/supabase';
@@ -30,8 +30,8 @@ export const ErrorLogPage: React.FC = () => {
 
   // Fetch all executions and filter client-side for errors
   // The n8n API status filter may not work reliably in all versions
-  const { data: allExecutions, isLoading, refetch } = useExecutions(
-    { limit: 500 },
+  const { data: allExecutions, isLoading, refetch } = useAllExecutions(
+    {},
     shouldFetchData ? refreshOptions : { autoRefresh: false }
   );
 

@@ -42,6 +42,25 @@ export const useExecutions = (params?: {
   });
 };
 
+// Hook to fetch all executions with pagination (for pages needing complete data)
+export const useAllExecutions = (params?: {
+  status?: string;
+  workflowId?: string;
+}, options?: RefreshOptions) => {
+  const { autoRefresh = true, refreshInterval = 30 } = options || {};
+
+  return useQuery({
+    queryKey: ['all-executions', params],
+    queryFn: async () => {
+      const response = await n8nApi.getAllExecutions(params);
+      return response.data;
+    },
+    refetchInterval: autoRefresh ? refreshInterval * 1000 : false,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+  });
+};
+
 export const useExecution = (id: string | null) => {
   return useQuery({
     queryKey: ['execution', id],
