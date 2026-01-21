@@ -96,28 +96,6 @@ export const useCommandPalette = (options: UseCommandPaletteOptions = {}) => {
         },
       },
       {
-        id: 'nav-credentials',
-        label: 'Go to Credentials',
-        description: 'Manage credentials',
-        category: 'navigation',
-        keywords: ['secrets', 'auth', 'keys'],
-        action: () => {
-          navigate('/credentials');
-          close();
-        },
-      },
-      {
-        id: 'nav-variables',
-        label: 'Go to Variables',
-        description: 'Manage environment variables',
-        category: 'navigation',
-        keywords: ['env', 'config', 'settings'],
-        action: () => {
-          navigate('/variables');
-          close();
-        },
-      },
-      {
         id: 'nav-settings',
         label: 'Go to Settings',
         description: 'Configure application settings',

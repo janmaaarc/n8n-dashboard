@@ -10,23 +10,6 @@ export const getN8nUrl = (settings?: { n8nUrl: string }): string => {
 };
 
 /**
- * Format a duration in seconds to a human-readable string
- */
-export const formatDuration = (seconds: number): string => {
-  if (seconds < 60) return `${seconds}s`;
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
-  return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
-};
-
-/**
- * Truncate a string to a specified length with ellipsis
- */
-export const truncate = (str: string, length: number): string => {
-  if (str.length <= length) return str;
-  return `${str.slice(0, length)}...`;
-};
-
-/**
  * Copy text to clipboard and return success status
  */
 export const copyToClipboard = async (text: string): Promise<boolean> => {
@@ -36,20 +19,6 @@ export const copyToClipboard = async (text: string): Promise<boolean> => {
   } catch {
     return false;
   }
-};
-
-/**
- * Debounce a function call
- */
-export const debounce = <T extends (...args: Parameters<T>) => ReturnType<T>>(
-  fn: T,
-  delay: number
-): ((...args: Parameters<T>) => void) => {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn(...args), delay);
-  };
 };
 
 /**

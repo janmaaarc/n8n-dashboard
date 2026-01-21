@@ -189,7 +189,7 @@ export const LandingPage: React.FC = () => {
               <div className="w-8 h-8 rounded-lg bg-neutral-900 dark:bg-white flex items-center justify-center">
                 <Workflow size={18} className="text-white dark:text-neutral-900" />
               </div>
-              <span className="font-semibold">n8n Pulse</span>
+              <span className="font-semibold">n8n Ops</span>
             </div>
             <div className="flex items-center gap-2 animate-fade-in">
               <button

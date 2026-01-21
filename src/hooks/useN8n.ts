@@ -61,14 +61,6 @@ export const useAllExecutions = (params?: {
   });
 };
 
-export const useExecution = (id: string | null) => {
-  return useQuery({
-    queryKey: ['execution', id],
-    queryFn: () => n8nApi.getExecution(id!),
-    enabled: !!id,
-  });
-};
-
 export const useToggleWorkflow = () => {
   const queryClient = useQueryClient();
 
@@ -198,15 +190,3 @@ export const useCredentials = (options?: RefreshOptions) => {
   });
 };
 
-export const useVariables = (options?: RefreshOptions) => {
-  const { autoRefresh = false, refreshInterval = 60 } = options || {};
-
-  return useQuery({
-    queryKey: ['variables'],
-    queryFn: async () => {
-      const response = await n8nApi.getVariables();
-      return response.data;
-    },
-    refetchInterval: autoRefresh ? refreshInterval * 1000 : false,
-  });
-};

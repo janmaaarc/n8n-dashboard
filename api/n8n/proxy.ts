@@ -7,6 +7,41 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const encryptionKey = process.env.ENCRYPTION_KEY;
 
+// Allowed origins for CORS
+const getAllowedOrigins = (): string[] => {
+  const origins: string[] = [];
+  if (process.env.VERCEL_URL) {
+    origins.push(`https://${process.env.VERCEL_URL}`);
+  }
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    origins.push(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`);
+  }
+  if (process.env.ALLOWED_ORIGINS) {
+    origins.push(...process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()));
+  }
+  // Allow localhost in development
+  if (process.env.NODE_ENV !== 'production') {
+    origins.push('http://localhost:5173', 'http://localhost:3000');
+  }
+  return origins;
+};
+
+// Set security headers
+const setSecurityHeaders = (res: VercelResponse, origin?: string): void => {
+  const allowedOrigins = getAllowedOrigins();
+  const requestOrigin = origin || '';
+
+  if (allowedOrigins.length === 0 || allowedOrigins.includes(requestOrigin)) {
+    res.setHeader('Access-Control-Allow-Origin', requestOrigin || '*');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+};
+
 // Inline Supabase client to avoid bundling issues
 const getSupabaseClient = () => {
   if (!supabaseUrl || !supabaseServiceKey) return null;
@@ -21,9 +56,9 @@ const IV_LENGTH = 16;
 const AUTH_TAG_LENGTH = 16;
 
 const decrypt = (encryptedData: string): string => {
-  if (!encryptionKey) throw new Error('ENCRYPTION_KEY not configured');
+  if (!encryptionKey) throw new Error('Encryption not configured');
   const keyBuffer = Buffer.from(encryptionKey, 'base64');
-  if (keyBuffer.length !== 32) throw new Error('ENCRYPTION_KEY must be 32 bytes');
+  if (keyBuffer.length !== 32) throw new Error('Invalid encryption configuration');
   const combined = Buffer.from(encryptedData, 'base64');
   const iv = combined.subarray(0, IV_LENGTH);
   const authTag = combined.subarray(IV_LENGTH, IV_LENGTH + AUTH_TAG_LENGTH);
@@ -80,8 +115,8 @@ async function getCredentials(req: VercelRequest): Promise<N8nCredentials | null
           return { url: credentials.n8n_url, apiKey };
         }
       }
-    } catch (err) {
-      console.error('Failed to get user credentials:', err);
+    } catch {
+      // Log error internally, don't expose details
     }
   }
 
@@ -96,20 +131,22 @@ async function getCredentials(req: VercelRequest): Promise<N8nCredentials | null
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const origin = req.headers.origin as string | undefined;
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    setSecurityHeaders(res, origin);
     return res.status(200).end();
   }
+
+  setSecurityHeaders(res, origin);
 
   const credentials = await getCredentials(req);
 
   if (!credentials) {
     return res.status(401).json({
-      error: 'n8n credentials not configured',
-      message: 'Please configure your n8n URL and API key in settings.',
+      error: 'Configuration required',
+      message: 'Please configure your n8n connection in settings.',
     });
   }
 
@@ -138,17 +175,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     const data = await response.json();
-
-    // Set CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
     return res.status(response.status).json(data);
-  } catch (error) {
-    return res.status(500).json({
-      error: 'Failed to proxy request to n8n',
-      details: error instanceof Error ? error.message : 'Unknown error',
+  } catch {
+    return res.status(502).json({
+      error: 'Connection failed',
+      message: 'Unable to connect to n8n. Please check your configuration.',
     });
   }
 }

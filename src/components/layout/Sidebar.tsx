@@ -113,7 +113,7 @@ export const Sidebar: React.FC = () => {
         <div className="w-8 h-8 rounded-lg bg-neutral-900 dark:bg-white flex items-center justify-center flex-shrink-0">
           <Workflow size={18} className="text-white dark:text-neutral-900" />
         </div>
-        <span className="text-sm font-semibold text-neutral-900 dark:text-white">n8n Pulse</span>
+        <span className="text-sm font-semibold text-neutral-900 dark:text-white">n8n Ops</span>
       </div>
 
       {/* Main Navigation */}

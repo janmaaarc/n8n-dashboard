@@ -1,4 +1,4 @@
-# n8n Pulse
+# n8n Ops
 
 A modern monitoring dashboard for n8n workflows built with React, TypeScript, and Tailwind CSS. Features a Linear/Notion-inspired minimal design with sidebar navigation and support for both single-user and multi-user deployments.
 
