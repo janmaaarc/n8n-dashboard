@@ -268,20 +268,6 @@ export const WorkflowList: React.FC<WorkflowListProps> = ({
             <option value="status">Status</option>
             <option value="nodes">Node count</option>
           </select>
-          <button
-            onClick={() => exportWorkflowsToCSV(filteredAndSortedWorkflows)}
-            className="px-3 py-2 text-sm rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
-            title="Export to CSV"
-          >
-            CSV
-          </button>
-          <button
-            onClick={() => exportWorkflowsToJSON(filteredAndSortedWorkflows)}
-            className="px-3 py-2 text-sm rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
-            title="Export to JSON"
-          >
-            JSON
-          </button>
         </div>
       </div>
 
@@ -352,24 +338,42 @@ export const WorkflowList: React.FC<WorkflowListProps> = ({
       ) : (
         <div className="rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 divide-y divide-neutral-200 dark:divide-neutral-800">
           {/* Header */}
-          <div className="px-4 py-2 flex items-center gap-3 bg-neutral-50 dark:bg-neutral-800/50">
-            <button
-              onClick={toggleSelectAll}
-              aria-label={selectedIds.size === paginatedWorkflows.length ? 'Deselect all workflows' : 'Select all workflows'}
-              aria-pressed={selectedIds.size === paginatedWorkflows.length && paginatedWorkflows.length > 0}
-              className={`w-4 h-4 rounded border flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-1 ${
-                selectedIds.size === paginatedWorkflows.length && paginatedWorkflows.length > 0
-                  ? 'bg-neutral-900 dark:bg-white border-neutral-900 dark:border-white text-white dark:text-neutral-900'
-                  : 'border-neutral-300 dark:border-neutral-600 hover:border-neutral-500'
-              }`}
-            >
-              {selectedIds.size === paginatedWorkflows.length && paginatedWorkflows.length > 0 && (
-                <Check size={12} />
-              )}
-            </button>
-            <span className="text-xs text-neutral-500 dark:text-neutral-400">
-              {filteredAndSortedWorkflows.length} workflow{filteredAndSortedWorkflows.length !== 1 ? 's' : ''}
-            </span>
+          <div className="px-4 py-2 flex items-center justify-between bg-neutral-50 dark:bg-neutral-800/50">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={toggleSelectAll}
+                aria-label={selectedIds.size === paginatedWorkflows.length ? 'Deselect all workflows' : 'Select all workflows'}
+                aria-pressed={selectedIds.size === paginatedWorkflows.length && paginatedWorkflows.length > 0}
+                className={`w-4 h-4 rounded border flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-1 ${
+                  selectedIds.size === paginatedWorkflows.length && paginatedWorkflows.length > 0
+                    ? 'bg-neutral-900 dark:bg-white border-neutral-900 dark:border-white text-white dark:text-neutral-900'
+                    : 'border-neutral-300 dark:border-neutral-600 hover:border-neutral-500'
+                }`}
+              >
+                {selectedIds.size === paginatedWorkflows.length && paginatedWorkflows.length > 0 && (
+                  <Check size={12} />
+                )}
+              </button>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                {filteredAndSortedWorkflows.length} workflow{filteredAndSortedWorkflows.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => exportWorkflowsToCSV(filteredAndSortedWorkflows)}
+                className="px-2 py-1 text-xs rounded text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                title="Export to CSV"
+              >
+                CSV
+              </button>
+              <button
+                onClick={() => exportWorkflowsToJSON(filteredAndSortedWorkflows)}
+                className="px-2 py-1 text-xs rounded text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                title="Export to JSON"
+              >
+                JSON
+              </button>
+            </div>
           </div>
 
           {/* Rows */}

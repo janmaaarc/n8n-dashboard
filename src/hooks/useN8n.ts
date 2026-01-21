@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { n8nApi } from '../services/n8n';
 import type { Workflow, Execution, DashboardStats } from '../types';
 
@@ -17,6 +17,8 @@ export const useWorkflows = (options?: RefreshOptions) => {
       return response.data;
     },
     refetchInterval: autoRefresh ? refreshInterval * 1000 : false,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -34,6 +36,8 @@ export const useExecutions = (params?: {
       return response.data;
     },
     refetchInterval: autoRefresh ? refreshInterval * 1000 : false,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
   });
 };
 
